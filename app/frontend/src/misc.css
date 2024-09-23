@@ -1,0 +1,12 @@
+.draggable {
+    cursor: move;
+    --wails-draggable: drag;
+    z-index: 1000;
+}
+
+.disable-select {
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;      
+    user-select: none;
+}
