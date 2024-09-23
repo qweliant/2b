@@ -1,8 +1,8 @@
 package main
 
 import (
-	objects "app/backend/objects"
-	state "app/backend/state"
+	objectsAPI "app/backend/objects"
+	stateAPI "app/backend/state"
 	"context"
 
 	"go.uber.org/zap"
@@ -31,13 +31,13 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) ReadObjectFile(objectID string) (string, error) {
-	return objects.ReadObjectFile(objectID, a.logger)
+	return objectsAPI.ReadObjectFile(objectID, a.logger)
 }
 
 func (a *App) ReadStateFile() (string, error) {
-	return state.ReadStateFile(a.logger)
+	return stateAPI.ReadStateFile(a.logger)
 }
 
 func (a *App) WriteStateFile(state string) error {
-	return state.WriteStateFile(state, a.logger)
+	return stateAPI.WriteStateFile(state, a.logger)
 }
