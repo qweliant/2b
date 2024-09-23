@@ -1,6 +1,8 @@
 package main
 
 import (
+	objects "app/backend/objects"
+	state "app/backend/state"
 	"context"
 
 	"go.uber.org/zap"
@@ -29,11 +31,13 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) ReadObjectFile(objectID string) (string, error) {
-	path, err := api.getObjectFilePath(objectID)
-	if err != nil {
-		a.logger.Error("Error getting object file path", zap.Error(err))
-		return "", err
-	}
-	a.logger.Info("Reading object file", zap.String("path", path))
-	return readJSONFile(path)
+	return objects.ReadObjectFile(objectID, a.logger)
+}
+
+func (a *App) ReadStateFile() (string, error) {
+	return state.ReadStateFile(a.logger)
+}
+
+func (a *App) WriteStateFile(state string) error {
+	return state.WriteStateFile(state, a.logger)
 }
