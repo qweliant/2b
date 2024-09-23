@@ -29,7 +29,7 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) ReadObjectFile(objectID string) (string, error) {
-	path, err := getObjectFilePath(objectID)
+	path, err := api.getObjectFilePath(objectID)
 	if err != nil {
 		a.logger.Error("Error getting object file path", zap.Error(err))
 		return "", err
