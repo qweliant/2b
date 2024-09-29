@@ -5,6 +5,7 @@ import {
   AlignLeft,
   AlignRight,
   Bold,
+  BoxSelect,
   CheckSquare,
   Code,
   ImageIcon,
@@ -45,12 +46,16 @@ const OptionsSidebar = ({
   setBackgroundColor,
   freeDrag,
   setFreeDrag,
+  defaultFont,
+  setDefaultFont,
 }: {
   editorRef: RefObject<ReactFrameworkOutput<Extensions>>;
   backgroundColor: string;
   setBackgroundColor: (color: string) => void;
   freeDrag: boolean;
   setFreeDrag: (value: boolean) => void;
+  defaultFont: string;
+  setDefaultFont: (font: string) => void;
 }) => {
   const [isTextSelected, setIsTextSelected] = useState(false);
   const [selectedTextAttributes, setSelectedTextAttributes] = useState({
@@ -130,13 +135,21 @@ const OptionsSidebar = ({
           {ContentTypes.options.map((type) => (
             <div
               key={type}
-              className="flex justify-between items-center w-full border rounded-md p-2"
+              draggable
+              unselectable="on"
+              className={cn(
+                "flex justify-between items-center w-full border rounded-md p-2 cursor-move",
+                type !== "text" && "pointer-events-none opacity-30"
+              )}
+              onDragStart={(e) => {
+                e.dataTransfer.setData("text/plain", type);
+              }}
             >
               <div className="flex gap-4 items-center">
                 <LucideText size={18} />
                 <p>{type.charAt(0).toLocaleUpperCase() + type.slice(1)}</p>
               </div>
-              <LucideGripVertical size={18} className="cursor-move" />
+              <LucideGripVertical size={18} />
             </div>
           ))}
         </div>
@@ -302,31 +315,11 @@ const OptionsSidebar = ({
         value="customize"
         className="h-full flex flex-col px-3 gap-4"
       >
-        <div>
-          <h3 className="text-sm font-semibold mb-2">COVER IMAGE</h3>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="w-full h-20 flex flex-col items-center justify-center"
-            >
-              <ImageIcon size={24} className="mb-1" />
-              <span className="text-xs">No Cover</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full h-20 flex flex-col items-center justify-center"
-            >
-              <ImageIcon size={24} className="mb-1" />
-              <span className="text-xs">Cover Image</span>
-            </Button>
-          </div>
-        </div>
-        <Separator />
         <div className="w-full">
           <h3 className="text-sm font-semibold mb-2">BACKGROUND</h3>
           <div className="flex gap-2 w-full">
             <Tabs defaultValue="none" className="w-full">
-              <TabsList className="w-full shadow-inner rounded-md">
+              <TabsList className="w-full shadow-inner rounded-md sm:flex-wrap sm:h-fit">
                 <TabsTrigger
                   value="none"
                   onClick={() => {
@@ -334,12 +327,16 @@ const OptionsSidebar = ({
                     setBackgroundColor("#fff");
                   }}
                 >
-                  <LayoutTemplate size={16} className="mr-2" />
+                  <BoxSelect size={16} className="mr-2" />
                   None
                 </TabsTrigger>
                 <TabsTrigger value="solid">
                   <div className="w-4 h-4 bg-blue-500 rounded-full mr-2" />
                   Solid
+                </TabsTrigger>
+                <TabsTrigger value="image" disabled>
+                  <ImageIcon size={16} className="mr-2" />
+                  Image
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="none">
@@ -354,9 +351,6 @@ const OptionsSidebar = ({
                   value={backgroundColor}
                   onChange={(color) => setBackgroundColor(color)}
                 />
-              </TabsContent>
-              <TabsContent value="gradient">
-                <p>Gradient background selected.</p>
               </TabsContent>
               <TabsContent value="image">
                 <p>Image background selected.</p>
@@ -378,16 +372,31 @@ const OptionsSidebar = ({
         <Separator />
         <div>
           <h3 className="text-sm font-semibold mb-2">DEFAULT FONT</h3>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1">
+          <div className="flex gap-2 sm:flex-wrap">
+            <Button
+              variant={defaultFont === "ui-sans-serif" ? "default" : "outline"}
+              size="sm"
+              className="flex-1"
+              onClick={() => setDefaultFont("ui-sans-serif")}
+            >
               <span className="font-sans">Aa</span>
               <span className="text-xs ml-1">Default</span>
             </Button>
-            <Button variant="outline" size="sm" className="flex-1">
+            <Button
+              variant={defaultFont === "ui-serif" ? "default" : "outline"}
+              size="sm"
+              className="flex-1"
+              onClick={() => setDefaultFont("ui-serif")}
+            >
               <span className="font-serif">Ss</span>
               <span className="text-xs ml-1">Serif</span>
             </Button>
-            <Button variant="outline" size="sm" className="flex-1">
+            <Button
+              variant={defaultFont === "ui-monospace" ? "default" : "outline"}
+              size="sm"
+              className="flex-1"
+              onClick={() => setDefaultFont("ui-monospace")}
+            >
               <span className="font-mono">00</span>
               <span className="text-xs ml-1">Mono</span>
             </Button>

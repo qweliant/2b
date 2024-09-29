@@ -26,6 +26,7 @@ import {
 } from "../../../store/objectTypesStore";
 import { ModeToggle } from "../../ui/theme-toggle";
 import {
+  DEFAULT_OBJECT,
   ObjectInstance,
   useAllObjects,
   useAllObjectsIDs,
@@ -144,9 +145,8 @@ const Sidebar = () => {
                   );
                   const contentUUID = uuid();
                   createObject(tabId, {
+                    ...DEFAULT_OBJECT,
                     type: objectType?.id ?? "",
-                    title: "",
-                    description: "",
                     contents: {
                       contentUUID: {
                         type: "text",

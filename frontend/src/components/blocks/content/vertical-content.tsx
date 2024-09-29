@@ -11,6 +11,7 @@ import {
   GripVertical,
   LucidePanelLeft,
   LucidePanelRight,
+  LucideSparkles,
 } from "lucide-react";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
@@ -19,11 +20,19 @@ import { Separator } from "../../ui/separator";
 import { ReactFrameworkOutput } from "@remirror/react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { useObject } from "@/store/objectsStore";
+import {
+  ObjectContent,
+  useBackgroundColor,
+  useDefaultFont,
+  useObject,
+} from "@/store/objectsStore";
 import { useQuery } from "@tanstack/react-query";
 import { ObjectType } from "@/types/objectTypes";
 import { produce } from "immer";
 import ContentTag from "./content-tags";
+import { v4 as uuid } from "uuid";
+import { useMessageStore } from "../../../store/chatStore";
+import { GetSummary } from "../../../../wailsjs/go/main/App";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const VerticalContent = ({ tabId }: { tabId: string }) => {
@@ -40,8 +49,10 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
     enabled: !!objectTypeID,
   });
   const editorRef = useRef<ReactFrameworkOutput<Extensions>>(null);
-  const [backgroundColor, setBackgroundColor] = useState("#fff");
+  const { backgroundColor, setBackgroundColor } = useBackgroundColor(tabId);
+  const { defaultFont, setDefaultFont } = useDefaultFont(tabId);
   const [freeDrag, setFreeDrag] = useState(false);
+  const { addMessage, messages } = useMessageStore();
   if (!object) return null;
 
   const generatedLayout = Object.entries(object.contents).map(
@@ -96,10 +107,10 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
               />
             </div>
             <div className="flex gap-1 items-center">
-              <ContentTag
+              {/* <ContentTag
                 type={object.aiReady ? "AI Ready" : "Not AI Ready"}
                 className="mr-2"
-              />
+              /> */}
               <ContentTag
                 type={
                   isError
@@ -119,13 +130,14 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
           </div>
           <Separator />
           <div
-            className="h-full"
-            style={{
-              backgroundColor: backgroundColor,
-            }}
+            className={cn(
+              "h-full  overflow-y-scroll pb-10",
+              backgroundColor === "" && "bg-background"
+            )}
+            style={{ backgroundColor: backgroundColor }}
           >
             <ResponsiveGridLayout
-              className="layout overflow-x-clip "
+              className="layout overflow-x-clip"
               layouts={{ lg: generatedLayout }}
               breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
               cols={{ lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 }}
@@ -135,16 +147,48 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
               resizeHandle={
                 !freeDrag && (
                   <ChevronsUpDown
-                    className="handle-s bottom-3 left-[50%] absolute cursor-ns-resize hover:text-muted-foreground opacity-0 group-hover:opacity-100"
+                    className="handle-s bottom-3 left-[50%] absolute cursor-ns-resize hover:text-muted-foreground opacity-0 group-hover:opacity-100 "
                     size={16}
                   />
                 )
               }
               isDraggable={true}
+              isDroppable={true}
+              onDrop={(layout, layoutItem, e) => {
+                //@ts-expect-error Wrong typing for the event by react-grid-layout
+                const data = e.dataTransfer.getData("text/plain");
+                const newObject = produce(object, (draft) => {
+                  const newContentItem: ObjectContent = {
+                    type: data,
+                    content: "",
+                    x: layoutItem.x,
+                    y: layoutItem.y,
+                    w: 12,
+                    h: 12,
+                    id: uuid(),
+                  };
+                  draft.contents[newContentItem.id] = newContentItem;
+                });
+                mutate(newObject);
+              }}
               width={window.innerWidth - 40} // Subtracting padding
               compactType="vertical"
-              preventCollision={false}
+              preventCollision={true}
               draggableHandle=".drag-handle"
+              onLayoutChange={(layout) => {
+                const newObject = produce(object, (draft) => {
+                  Object.entries(draft.contents).forEach(([key, value]) => {
+                    const contentObj = value;
+                    const newLayoutItem = layout.find((item) => item.i === key);
+                    if (!newLayoutItem) return;
+                    contentObj.x = newLayoutItem.x;
+                    contentObj.y = newLayoutItem.y;
+                    contentObj.w = newLayoutItem.w;
+                    contentObj.h = newLayoutItem.h;
+                  });
+                });
+                mutate(newObject);
+              }}
             >
               {Object.entries(object.contents).map(([key, value]) => {
                 const contentObj = value;
@@ -157,6 +201,39 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
                       freeDrag && "shadow-md rounded-lg border"
                     )}
                   >
+                    <Button
+                      variant={"ghost"}
+                      size={"iconSm"}
+                      className=" absolute top-2 right-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => {
+                        addMessage({
+                          id: messages.length,
+                          role: "user",
+                          content: `Summarize some content for me: \n${contentObj.content.slice(
+                            0,
+                            15
+                          )}...`,
+                          timestamp: "Just now",
+                          reference: {
+                            title: object.title,
+                            id: object.id,
+                          },
+                        });
+                        GetSummary(contentObj.content).then((response) => {
+                          addMessage({
+                            id: messages.length,
+                            role: "ai",
+                            content: response,
+                            timestamp: "Just now",
+                          });
+                        });
+                      }}
+                    >
+                      <LucideSparkles
+                        className="text-muted-foreground"
+                        size={18}
+                      />
+                    </Button>
                     <TextEditor
                       ref={editorRef}
                       mutate={(newState) => {
@@ -166,6 +243,7 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
                         mutate(newObject);
                       }}
                       content={contentObj.content}
+                      defaultFont={defaultFont}
                     />
                     <GripVertical
                       className="drag-handle left-0 top-[50%] absolute cursor-move text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
@@ -190,6 +268,8 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
             editorRef={editorRef}
             backgroundColor={backgroundColor}
             setBackgroundColor={setBackgroundColor}
+            defaultFont={defaultFont}
+            setDefaultFont={setDefaultFont}
             freeDrag={freeDrag}
             setFreeDrag={setFreeDrag}
           />

@@ -7,6 +7,10 @@ export function GetAllObjectTypeFiles():Promise<Array<string>>;
 
 export function GetAllObjects():Promise<Array<string>>;
 
+export function GetChat(arg1:string):Promise<string>;
+
+export function GetSummary(arg1:string):Promise<string>;
+
 export function ReadObjectFile(arg1:string):Promise<string>;
 
 export function ReadObjectTypeFile(arg1:string):Promise<string>;

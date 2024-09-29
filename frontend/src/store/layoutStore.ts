@@ -85,6 +85,7 @@ const setActiveTab = (
   data: UIState,
   mutate: (newState: UIState) => void
 ) => {
+  if (data.tabsState.activeTab === tabId) return;
   const newState = produce(data, (draft) => {
     draft.tabsState.activeTab = tabId;
   });

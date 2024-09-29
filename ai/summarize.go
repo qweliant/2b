@@ -2,7 +2,6 @@ package ai
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/tmc/langchaingo/llms"
@@ -12,7 +11,7 @@ import (
 // Set OPEN AI URL and API KEY using environment variables
 // set the environment variables in the code
 
-func summarize() {
+func summarize(text string) string {
 	llm, err := openai.New(
 		openai.WithBaseURL("http://localhost:1234/v1"),
 		openai.WithToken("your-api-key-here"),
@@ -21,12 +20,12 @@ func summarize() {
 		log.Fatal(err)
 	}
 	ctx := context.Background()
-	completion, err := llm.Call(ctx, "Hello there, how do you do?",
+	prompt := "Summarize the following text (keep it short): \n\n" + text
+	completion, err := llm.Call(ctx, prompt,
 		llms.WithTemperature(0.8),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(completion)
+	return completion
 }

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { create } from "zustand";
 import {
   DeleteObjectFile,
   GetAllObjects,
@@ -13,16 +12,9 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
+import { produce } from "immer";
 
-const ContentTypes = z.enum([
-  "text",
-  "image",
-  "video",
-  "audio",
-  "file",
-  "drawing",
-  "bookmark",
-]);
+const ContentTypes = z.enum(["text", "image", "file", "drawing", "bookmark"]);
 
 const ContentTypeSchema = z.object({
   type: ContentTypes,
@@ -45,9 +37,31 @@ const ObjectInstanceSchema = z.object({
   contents: z.record(ContentTypeSchema),
   properties: PropertyValueMapSchema,
   aiReady: z.boolean().default(false).optional(),
+  pageCustomization: z.object({
+    backgroundColor: z.string().optional(),
+    backgroundImage: z.string().optional(),
+    defaultFont: z.string().optional(),
+    freeDrag: z.boolean().optional(),
+  }),
 });
 
 type ObjectInstance = z.infer<typeof ObjectInstanceSchema>;
+
+const DEFAULT_OBJECT: ObjectInstance = {
+  id: "",
+  type: "",
+  title: "",
+  description: "",
+  contents: {},
+  properties: {},
+  aiReady: false,
+  pageCustomization: {
+    backgroundColor: "",
+    backgroundImage: "",
+    defaultFont: "ui-sans-serif",
+    freeDrag: false,
+  },
+};
 
 function useCreateObject() {
   const queryClient = useQueryClient();
@@ -123,6 +137,40 @@ function useDeleteObject() {
   };
 }
 
+function useDefaultFont(id: string) {
+  const { data, mutate } = useObject(id);
+  const setDefaultFont = (font: string) => {
+    if (!data) {
+      return;
+    }
+    const newData = produce(data, (draft) => {
+      draft.pageCustomization.defaultFont = font;
+    });
+    mutate(newData);
+  };
+  return {
+    defaultFont: data?.pageCustomization.defaultFont ?? "ui-sans-serif",
+    setDefaultFont,
+  }
+}
+
+function useBackgroundColor(id: string) {
+  const { data, mutate } = useObject(id);
+  const setBackgroundColor = (color: string) => {
+    if (!data) {
+      return;
+    }
+    const newData = produce(data, (draft) => {
+      draft.pageCustomization.backgroundColor = color;
+    });
+    mutate(newData);
+  };
+  return {
+    backgroundColor: data?.pageCustomization.backgroundColor ?? "",
+    setBackgroundColor,
+  };
+}
+
 export type { ObjectInstance, ObjectContent };
 export {
   ObjectInstanceSchema,
@@ -131,5 +179,8 @@ export {
   useObject,
   useAllObjects,
   useAllObjectsIDs,
-  useDeleteObject
+  useDeleteObject,
+  useDefaultFont,
+  useBackgroundColor,
+  DEFAULT_OBJECT,
 };

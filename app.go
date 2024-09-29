@@ -1,9 +1,13 @@
 package main
 
 import (
+	"app/ai"
 	objectsAPI "app/backend/objects"
 	stateAPI "app/backend/state"
+	"app/backend/util"
 	"context"
+	"fmt"
+	"net/url"
 
 	"go.uber.org/zap"
 )
@@ -19,7 +23,7 @@ func NewApp() *App {
 	logger := zap.Must(zap.NewDevelopment())
 	logger.Info("Creating App Struct")
 	defer logger.Sync()
-	// go ai.StartServer()
+	go ai.StartServer()
 
 	return &App{
 		logger: logger,
@@ -110,4 +114,39 @@ func (a *App) GetAllObjectTypeFiles() ([]string, error) {
 		return nil, err
 	}
 	return data, nil
+}
+
+func (a *App) GetSummary(text string) (string, error) {
+	a.logger.Info("Getting summary for", zap.String("text", text))
+	baseURL := "http://localhost:8085/summarize?text="
+	// URL-encode the query string to make it safe
+	encodedQuery := url.QueryEscape(text)
+
+	// Build the full URL with the encoded query
+	fullURL := fmt.Sprintf("%s?text=%s", baseURL, encodedQuery)
+
+	summary, err := util.SendRequest(fullURL)
+	if err != nil {
+		a.logger.Error("Error getting summary", zap.Error(err))
+		return "", err
+	}
+	return string(summary), nil
+}
+
+func (a *App) GetChat(text string) (string, error) {
+	a.logger.Info("Getting chat for", zap.String("text", text))
+	baseURL := "http://localhost:8085/chat"
+	// URL-encode the query string to make it safe
+	encodedQuery := url.QueryEscape(text)
+
+	// Build the full URL with the encoded query
+	fullURL := fmt.Sprintf("%s?text=%s", baseURL, encodedQuery)
+	// Build the full URL with the encoded query
+
+	chat, err := util.SendRequest(fullURL)
+	if err != nil {
+		a.logger.Error("Error getting chat", zap.Error(err))
+		return "", err
+	}
+	return string(chat), nil
 }

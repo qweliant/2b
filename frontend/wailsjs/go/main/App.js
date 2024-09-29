@@ -14,6 +14,14 @@ export function GetAllObjects() {
   return window['go']['main']['App']['GetAllObjects']();
 }
 
+export function GetChat(arg1) {
+  return window['go']['main']['App']['GetChat'](arg1);
+}
+
+export function GetSummary(arg1) {
+  return window['go']['main']['App']['GetSummary'](arg1);
+}
+
 export function ReadObjectFile(arg1) {
   return window['go']['main']['App']['ReadObjectFile'](arg1);
 }

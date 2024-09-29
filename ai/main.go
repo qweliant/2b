@@ -8,7 +8,9 @@ import (
 
 // Handler for the root route "/"
 func helloHandler(w http.ResponseWriter, r *http.Request) {
-	summarize()
+	text := r.URL.Query().Get("text")
+	data := summarize(text)
+	fmt.Fprintf(w, data)
 }
 
 // Handler for the "/greet" route
@@ -20,9 +22,16 @@ func greetHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %s!", name)
 }
 
+func chatHandler(w http.ResponseWriter, r *http.Request) {
+	text := r.URL.Query().Get("text")
+	data := chat(text)
+	fmt.Fprintf(w, data)
+}
+
 func StartServer() {
-	// Handle root route
-	http.HandleFunc("/", helloHandler)
+	http.HandleFunc("/summarize", helloHandler)
+
+	http.HandleFunc("/chat", chatHandler)
 
 	// Handle /greet route
 	http.HandleFunc("/greet", greetHandler)

@@ -32,7 +32,8 @@ import { ObjectInstance } from "../../../../store/objectsStore";
 import debounce from "lodash/debounce";
 import { prosemirrorNodeToHtml } from "remirror";
 import useDebounce from "../../../../lib/use-debounce";
-
+import { ThemeProvider } from "@remirror/react";
+import { Button } from "../../../ui/button";
 // import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
 const extensions = () => [
   new PlaceholderExtension({
@@ -81,20 +82,22 @@ export type Extensions = ReactExtensions<
 interface TextEditorProps {
   mutate: (newState: string) => void;
   content: string;
+  defaultFont: string;
 }
 
 const TextEditor = forwardRef<
   ReactFrameworkOutput<Extensions>,
   TextEditorProps
->(({ mutate, content }, ref) => {
+>(({ mutate, content, defaultFont }, ref) => {
   const { manager, getContext, state, setState } = useRemirror({
     extensions: extensions,
     content: content,
     stringHandler: "markdown",
   });
-  const [value, setValue] = useState<string>(getContext()?.helpers?.getMarkdown() ?? "");
+  const [value, setValue] = useState<string>(
+    getContext()?.helpers?.getMarkdown() ?? ""
+  );
   const debouncedValue = useDebounce(value, 300);
-
   useEffect(() => {
     mutate(debouncedValue);
   }, [debouncedValue]);
@@ -106,15 +109,23 @@ const TextEditor = forwardRef<
     <div className="h-full rounded-md hover:border-border bg-background border border-transparent ">
       <div className="h-full overflow-y-scroll">
         <div className="remirror-theme cursor-text overflow-y-scroll">
-          <Remirror
-            manager={manager}
-            onChange={({ state }) => {
-              const markdown = getContext()?.helpers?.getMarkdown();
-              setValue(markdown ?? "");
-              setState(state);
+          <ThemeProvider
+            theme={{
+              fontFamily: {
+                default: defaultFont,
+              },
             }}
-            state={state}
-          ></Remirror>
+          >
+            <Remirror
+              manager={manager}
+              onChange={({ state }) => {
+                const markdown = getContext()?.helpers?.getMarkdown();
+                setValue(markdown ?? "");
+                setState(state);
+              }}
+              state={state}
+            ></Remirror>
+          </ThemeProvider>
         </div>
       </div>
     </div>

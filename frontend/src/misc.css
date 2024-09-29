@@ -11,6 +11,13 @@
   user-select: none;
 }
 
+.allow-select {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 .react-grid-item.react-grid-placeholder {
   background: hsl(var(--primary)) !important;
   opacity: 0.2;
