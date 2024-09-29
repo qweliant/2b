@@ -1,6 +1,16 @@
+@import "../node_modules/react-grid-layout/css/styles.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  ul, ol {
+    list-style: revert;
+    padding-left: 24px;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -26,8 +26,7 @@ func ReadStateFile(logger *zap.Logger) (string, error) {
 		logger.Error("Error getting state file path", zap.Error(err))
 		return state, err
 	}
-	logger.Info("Reading state file", zap.String("path", path))
-	content, err := util.ReadJSONFile(path)
+	content, err := util.ReadJSONFile(path, logger)
 	if err != nil {
 		logger.Error("Error reading state file", zap.Error(err))
 		logger.Info("Creating default state")
@@ -43,8 +42,7 @@ func WriteStateFile(state string, logger *zap.Logger) error {
 		logger.Error("Error getting state file path", zap.Error(err))
 		return err
 	}
-	logger.Info("Writing state file", zap.String("path", path), zap.String("state", state))
-	err = os.WriteFile(path, []byte(state), 0644)
+	err = util.WriteJSONFile(path, state, logger)
 	if err != nil {
 		logger.Error("Error writing state file", zap.Error(err))
 		return err

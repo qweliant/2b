@@ -3,10 +3,17 @@ import { ReadStateFile, WriteStateFile } from "../../wailsjs/go/main/App";
 import { useQueryWrapper } from "./util";
 import { z } from "zod";
 
+const tabTypes = z.enum([
+  "object",
+  "createObject",
+  "objectType",
+  "createObjectType",
+]);
+
+type TabType = z.infer<typeof tabTypes>;
+
 const tabSchema = z.object({
-  type: z
-    .enum(["object", "createObject", "objectType", "createObjectType"])
-    .default("object"),
+  type: tabTypes.default("object"),
   id: z.string(),
 });
 
@@ -18,6 +25,7 @@ const tabsSchema = z.object({
 const stateSchema = z.object({
   isSidebarOpen: z.boolean(),
   tabsState: tabsSchema,
+  isBotSidebarOpen: z.boolean().optional(),
 });
 
 type UIState = z.infer<typeof stateSchema>;
@@ -41,10 +49,14 @@ function useStateFile() {
 
 const createTab = (
   tabId: string,
-  tabType: "object" | "createObject" | "objectType" | "createObjectType",
+  tabType: TabType,
   data: UIState,
   mutate: (newState: UIState) => void
 ) => {
+  if (data.tabsState.tabs.find((tab) => tab.id === tabId)) {
+    setActiveTab(tabId, data, mutate);
+    return;
+  }
   const newState = produce(data, (draft) => {
     draft.tabsState.tabs.push({ type: tabType, id: tabId });
     draft.tabsState.activeTab = tabId;
@@ -151,4 +163,41 @@ function useSidebarState(): {
   };
 }
 
-export { useSidebarState, useTabsState };
+function setBotSidebarOpen(
+  isOpen: boolean,
+  data: UIState,
+  mutate: (newState: UIState) => void
+) {
+  const newState = produce(data, (draft) => {
+    draft.isBotSidebarOpen = isOpen;
+  });
+  mutate(newState);
+}
+
+function useBotSidebarState(): {
+  isBotSidebarOpen: boolean;
+  setBotSidebarOpen: (isOpen: boolean) => void;
+  isLoading: boolean;
+  error: Error | null;
+} {
+  const { data, mutate, isLoading, error } = useStateFile();
+
+  if (!data) {
+    return {
+      isBotSidebarOpen: true,
+      setBotSidebarOpen: () => {},
+      isLoading,
+      error,
+    };
+  }
+
+  return {
+    isBotSidebarOpen: data.isBotSidebarOpen ?? false,
+    setBotSidebarOpen: (isOpen: boolean) =>
+      setBotSidebarOpen(isOpen, data, mutate),
+    isLoading,
+    error,
+  };
+}
+
+export { useSidebarState, useTabsState, useBotSidebarState };
