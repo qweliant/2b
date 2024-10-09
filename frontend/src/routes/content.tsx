@@ -17,11 +17,12 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { LucideX } from "lucide-react";
+import { LucidePin, LucideX } from "lucide-react";
 import TextEditor from "../components/blocks/content/text/text-editor";
 import VerticalContent from "../components/blocks/content/vertical-content";
 import { useQueries } from "@tanstack/react-query";
 import { ObjectInstance } from "../store/objectsStore";
+import ToDoList from "../components/blocks/content/todolist/todolist";
 const Content = () => {
   const { tabsState, setActiveTab, removeTab } = useTabsState();
   const activeTab = tabsState.activeTab;
@@ -58,20 +59,26 @@ const Content = () => {
             >
               {tab.type === "createObjectType" ? (
                 "Create Object Type"
-              ) : (
+              ) : tab.type === "object" ? (
                 <>
                   {objectTitles.find((object) => object?.id === tab.id)
                     ?.title || "Untitled"}
                 </>
+              ) : tab.type === "todoList" ? (
+                "To do List"
+              ) : tab.type === "inbox" ? (
+                "Inbox"
+              ) : (
+                "Untitled"
               )}
               <Button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (tab.type === "object") {
-                    removeTab(tab.id);
+                  if (tab.type === "createObjectType") {
+                    setDialogOpen(true);
                     return;
                   }
-                  setDialogOpen(true);
+                  removeTab(tab.id);
                 }}
                 variant={"invisible"}
                 className="hover:text-muted-foreground h-6 w-6 p-0"
@@ -87,6 +94,7 @@ const Content = () => {
               <CreateObjectType key={tab.id} tabID={tab.id} />
             )}
             {tab.type === "object" && <VerticalContent tabId={tab.id} />}
+            {tab.type === "todoList" && <ToDoList />}
           </TabsContent>
         ))}
         <Dialog

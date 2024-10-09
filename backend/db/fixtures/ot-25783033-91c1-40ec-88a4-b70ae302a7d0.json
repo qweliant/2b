@@ -1,0 +1,25 @@
+{
+  "name": "Tag",
+  "icon": "",
+  "baseType": "tag",
+  "description": "Tags are used to tag all kinds of objects",
+  "color": "",
+  "properties": {
+    "ae29371b-1de4-4d3e-98f1-7328c76f562f": {
+      "type": "text",
+      "name": "Label",
+      "visibility": "visible",
+      "icon": "📝",
+      "defaultValue": ""
+    },
+    "fbd4bea1-0a76-4eb0-8d1b-91cc287ec934": {
+      "type": "text",
+      "name": "Description",
+      "visibility": "visible",
+      "icon": "📝",
+      "defaultValue": ""
+    }
+  },
+  "fixed": true,
+  "id": "25783033-91c1-40ec-88a4-b70ae302a7d0"
+}

@@ -11,6 +11,8 @@ import {
   GripVertical,
   LucidePanelLeft,
   LucidePanelRight,
+  LucidePin,
+  LucidePinOff,
   LucideSparkles,
 } from "lucide-react";
 import { Input } from "../../ui/input";
@@ -18,7 +20,7 @@ import { Button } from "../../ui/button";
 import OptionsSidebar from "./options-siderbar";
 import { Separator } from "../../ui/separator";
 import { ReactFrameworkOutput } from "@remirror/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   ObjectContent,
@@ -33,7 +35,8 @@ import ContentTag from "./content-tags";
 import { v4 as uuid } from "uuid";
 import { useMessageStore } from "../../../store/chatStore";
 import { GetSummary } from "../../../../wailsjs/go/main/App";
-
+import { ImperativePanelHandle } from "react-resizable-panels";
+import PropertiesSidebar from "./properties-sidebar";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const VerticalContent = ({ tabId }: { tabId: string }) => {
   const {
@@ -53,7 +56,30 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
   const { defaultFont, setDefaultFont } = useDefaultFont(tabId);
   const [freeDrag, setFreeDrag] = useState(false);
   const { addMessage, messages } = useMessageStore();
+
+  const propertiesSidebarRef = useRef<ImperativePanelHandle>(null);
+  const optionsSidebarRef = useRef<ImperativePanelHandle>(null);
+  const [propertiesSidebarOpen, setPropertiesSidebarOpen] = useState(true);
+  const [optionsSidebarOpen, setOptionsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (propertiesSidebarRef.current && propertiesSidebarOpen) {
+      propertiesSidebarRef.current.expand();
+    } else if (propertiesSidebarRef.current && !propertiesSidebarOpen) {
+      propertiesSidebarRef.current.collapse();
+    }
+  }, [propertiesSidebarOpen]);
+
+  useEffect(() => {
+    if (optionsSidebarRef.current && optionsSidebarOpen) {
+      optionsSidebarRef.current.expand();
+    } else if (optionsSidebarRef.current && !optionsSidebarOpen) {
+      optionsSidebarRef.current.collapse();
+    }
+  }, [optionsSidebarOpen]);
+
   if (!object) return null;
+  if (!objectType) return null;
 
   const generatedLayout = Object.entries(object.contents).map(
     ([key, value]) => {
@@ -64,35 +90,58 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
         y: contentObj.y,
         w: contentObj.w,
         h: contentObj.h,
-        maxH: 15,
       };
     }
   );
-
   return (
-    <div className="bg-background min-h-full h-full border rounded-md shadow-sm  ">
+    <div
+      className={cn(
+        "bg-background min-h-full h-full border rounded-md shadow-sm",
+        objectType?.color !== "" &&
+          `border-${objectType?.color.replace("bg-", "")}`
+      )}
+    >
       <ResizablePanelGroup direction={"horizontal"} className="h-full">
         <ResizablePanel
-          defaultSize={10}
+          defaultSize={propertiesSidebarOpen ? 20 : 0}
           collapsible
-          className="h-full"
+          className="h-full transition-all ease-in-out duration-100"
           collapsedSize={0}
           minSize={20}
           maxSize={30}
+          ref={propertiesSidebarRef}
         >
-          {Object.entries(object.properties).map(([key, value]) => (
-            <p>
-              {objectType && objectType.properties[key].name}: {value} -{" "}
-              {objectType && objectType.properties[key].type}
-            </p>
-          ))}
+          <PropertiesSidebar id={tabId} />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel className={cn("overflow-y-scroll py-2 h-full")}>
           <div className="flex justify-between items-center px-4">
             <div className="flex gap-1 items-center w-[50%]">
-              <Button variant={"ghost"} size={"iconSm"}>
+              <Button
+                variant={"ghost"}
+                size={"iconSm"}
+                onClick={() => {
+                  setPropertiesSidebarOpen(!propertiesSidebarOpen);
+                }}
+              >
                 <LucidePanelLeft size={18} />
+              </Button>
+              <Button
+                variant={"ghost"}
+                size={"iconSm"}
+                className="text-muted-foreground"
+                onClick={() => {
+                  const newObject = produce(object, (draft) => {
+                    draft.pinned = !draft.pinned;
+                  });
+                  mutate(newObject);
+                }}
+              >
+                {object.pinned ? (
+                  <LucidePin size={18} />
+                ) : (
+                  <LucidePinOff size={18} />
+                )}
               </Button>
               <Input
                 className="border-none text-xl font-semibold w-full focus:border focus:border-border "
@@ -123,7 +172,13 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
                 }
                 className="mr-2"
               />
-              <Button variant={"ghost"} size={"iconSm"}>
+              <Button
+                variant={"ghost"}
+                size={"iconSm"}
+                onClick={() => {
+                  setOptionsSidebarOpen(!optionsSidebarOpen);
+                }}
+              >
                 <LucidePanelRight size={18} />
               </Button>
             </div>
@@ -173,7 +228,7 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
               }}
               width={window.innerWidth - 40} // Subtracting padding
               compactType="vertical"
-              preventCollision={true}
+              preventCollision={false}
               draggableHandle=".drag-handle"
               onLayoutChange={(layout) => {
                 const newObject = produce(object, (draft) => {
@@ -204,7 +259,7 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
                     <Button
                       variant={"ghost"}
                       size={"iconSm"}
-                      className=" absolute top-2 right-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                      className=" absolute top-2 right-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity z-10"
                       onClick={() => {
                         addMessage({
                           id: messages.length,
@@ -257,12 +312,13 @@ const VerticalContent = ({ tabId }: { tabId: string }) => {
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel
-          defaultSize={10}
+          defaultSize={optionsSidebarOpen ? 15 : 0}
           collapsible
-          className="h-full"
+          className="h-full transition-all ease-in-out duration-100"
           collapsedSize={0}
           minSize={20}
           maxSize={40}
+          ref={optionsSidebarRef}
         >
           <OptionsSidebar
             editorRef={editorRef}

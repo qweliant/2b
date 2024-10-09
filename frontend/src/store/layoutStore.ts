@@ -3,11 +3,16 @@ import { ReadStateFile, WriteStateFile } from "../../wailsjs/go/main/App";
 import { useQueryWrapper } from "./util";
 import { z } from "zod";
 
+const DEFAULT_TODO_LIST_TAB_ID = "5f20e123-6fb7-4595-ab83-c2fa31c16987";
+const DEFAULT_INBOX_TAB_ID = "a2bbe0fd-56a8-493f-bf17-eb4c4850939a";
+
 const tabTypes = z.enum([
   "object",
   "createObject",
   "objectType",
   "createObjectType",
+  "inbox",
+  "todoList",
 ]);
 
 type TabType = z.infer<typeof tabTypes>;
@@ -94,10 +99,7 @@ const setActiveTab = (
 
 function useTabsState(): {
   tabsState: UIState["tabsState"];
-  createTab: (
-    tabId: string,
-    tabType: "object" | "createObject" | "objectType" | "createObjectType"
-  ) => void;
+  createTab: (tabId: string, tabType: TabType) => void;
   removeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
   isLoading: boolean;
@@ -201,4 +203,10 @@ function useBotSidebarState(): {
   };
 }
 
-export { useSidebarState, useTabsState, useBotSidebarState };
+export {
+  useSidebarState,
+  useTabsState,
+  useBotSidebarState,
+  DEFAULT_TODO_LIST_TAB_ID,
+  DEFAULT_INBOX_TAB_ID,
+};

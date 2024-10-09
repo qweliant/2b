@@ -108,7 +108,7 @@ const TextEditor = forwardRef<
   return (
     <div className="h-full rounded-md hover:border-border bg-background border border-transparent ">
       <div className="h-full overflow-y-scroll">
-        <div className="remirror-theme cursor-text overflow-y-scroll">
+        <div className="remirror-theme cursor-text">
           <ThemeProvider
             theme={{
               fontFamily: {

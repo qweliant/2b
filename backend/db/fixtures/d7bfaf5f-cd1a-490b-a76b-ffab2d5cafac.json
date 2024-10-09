@@ -1,0 +1,29 @@
+{
+  "id": "d7bfaf5f-cd1a-490b-a76b-ffab2d5cafac",
+  "type": "25783033-91c1-40ec-88a4-b70ae302a7d0",
+  "title": "Low",
+  "pinned": false,
+  "description": "",
+  "contents": {
+    "contentUUID": {
+      "type": "text",
+      "content": "",
+      "id": "23fe24f9-1b7e-44a1-95fd-d4d0659c9c7d",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    }
+  },
+  "properties": {
+    "ae29371b-1de4-4d3e-98f1-7328c76f562f": "",
+    "fbd4bea1-0a76-4eb0-8d1b-91cc287ec934": ""
+  },
+  "aiReady": false,
+  "pageCustomization": {
+    "backgroundColor": "",
+    "backgroundImage": "",
+    "defaultFont": "ui-sans-serif",
+    "freeDrag": false
+  }
+}

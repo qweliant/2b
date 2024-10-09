@@ -1,11 +1,14 @@
 package main
 
 import (
-	"app/ai"
-	objectsAPI "app/backend/objects"
+	"app/backend/db"
+	"app/backend/handlers"
+	objectsAPI "app/backend/handlers"
+	"app/backend/repositories"
 	stateAPI "app/backend/state"
 	"app/backend/util"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 
@@ -14,19 +17,30 @@ import (
 
 // App struct
 type App struct {
-	ctx    context.Context
-	logger *zap.Logger
+	ctx      context.Context
+	logger   *zap.Logger
+	handlers *handlers.Handlers
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
 	logger := zap.Must(zap.NewDevelopment())
 	logger.Info("Creating App Struct")
+	database, err := db.InitDB(logger)
+	db.CreateTables(database)
+	repos := repositories.NewRepositories(database)
+	handlers := handlers.NewHandlers(repos)
 	defer logger.Sync()
-	go ai.StartServer()
+	// go ai.StartServer()
+
+	if err != nil {
+		logger.Error("Error initializing database", zap.Error(err))
+		panic("Error initializing database")
+	}
 
 	return &App{
-		logger: logger,
+		logger:   logger,
+		handlers: handlers,
 	}
 }
 
@@ -89,13 +103,17 @@ func (a *App) WriteStateFile(state string) error {
 }
 
 func (a *App) ReadObjectTypeFile(objectTypeID string) (string, error) {
-	data, err := objectsAPI.ReadObjectTypeFile(objectTypeID, a.logger)
+	data, err := a.handlers.ObjectTypeHandler.GetObjectType(objectTypeID, a.logger)
 	if err != nil {
-		a.logger.Error("Error reading object type file", zap.Error(err))
+		a.logger.Error("Error reading object file", zap.Error(err))
 		return "", err
 	}
-	a.logger.Info(data)
-	return data, nil
+	json_string, err := json.Marshal(data)
+	if err != nil {
+		a.logger.Error("Error marshaling data to JSON", zap.Error(err))
+		return "", err
+	}
+	return string(json_string), nil
 }
 
 func (a *App) WriteObjectTypeFile(objectTypeID string, objectType string) error {
@@ -108,7 +126,7 @@ func (a *App) WriteObjectTypeFile(objectTypeID string, objectType string) error 
 }
 
 func (a *App) GetAllObjectTypeFiles() ([]string, error) {
-	data, err := objectsAPI.GetAllObjectTypeFiles(a.logger)
+	data, err := a.handlers.ObjectTypeHandler.GetAllObjectTypeIDs(a.logger)
 	if err != nil {
 		a.logger.Error("Error getting all object type files", zap.Error(err))
 		return nil, err

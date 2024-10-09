@@ -21,7 +21,8 @@ func chat(text string) string {
 	}
 	ctx := context.Background()
 	content := []llms.MessageContent{
-		llms.TextParts(llms.ChatMessageTypeSystem, "You are an helpful assistant. Here is the previous conversation and now you will work with the user to give a proper answer"+text),
+		llms.TextParts(llms.ChatMessageTypeSystem, "You are an helpful assistant. Here is the previous conversation and now you will work with the user to give a proper answer. Maybe the previous conversation and new message are not related so try you best to reply then with your own knowledge"),
+		llms.TextParts(llms.ChatMessageTypeHuman, text),
 	}
 	res := ""
 	completion, err := llm.GenerateContent(ctx, content, llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {

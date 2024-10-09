@@ -33,15 +33,16 @@ const ObjectInstanceSchema = z.object({
   id: z.string().uuid(),
   type: z.string(),
   title: z.string(),
+  pinned: z.boolean().default(false),
   description: z.string().optional(),
   contents: z.record(ContentTypeSchema),
   properties: PropertyValueMapSchema,
   aiReady: z.boolean().default(false).optional(),
   pageCustomization: z.object({
-    backgroundColor: z.string().optional(),
-    backgroundImage: z.string().optional(),
-    defaultFont: z.string().optional(),
-    freeDrag: z.boolean().optional(),
+    backgroundColor: z.string().default(""),
+    backgroundImage: z.string().default(""),
+    defaultFont: z.string().default("ui-sans-serif"),
+    freeDrag: z.boolean().default(false),
   }),
 });
 
@@ -50,7 +51,8 @@ type ObjectInstance = z.infer<typeof ObjectInstanceSchema>;
 const DEFAULT_OBJECT: ObjectInstance = {
   id: "",
   type: "",
-  title: "",
+  title: "Untitled",
+  pinned: false,
   description: "",
   contents: {},
   properties: {},
@@ -151,7 +153,7 @@ function useDefaultFont(id: string) {
   return {
     defaultFont: data?.pageCustomization.defaultFont ?? "ui-sans-serif",
     setDefaultFont,
-  }
+  };
 }
 
 function useBackgroundColor(id: string) {

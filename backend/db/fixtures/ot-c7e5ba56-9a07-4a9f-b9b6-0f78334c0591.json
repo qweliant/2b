@@ -1,0 +1,33 @@
+{
+    "name": "Task",
+    "icon": "✅",
+    "baseType": "task",
+    "description": "A task with a title, description, due date, status, and priority level",
+    "color": "#FFAA00",
+    "properties": {
+      "4224f22e-a9f4-489c-b49b-00f4d5a05e01": {
+        "type": "date",
+        "name": "Due Date",
+        "visibility": "visible",
+        "icon": "📅",
+        "defaultValue": ""
+      },
+      "09148277-0efc-4405-a8a2-d8d777606c35": {
+        "type": "boolean",
+        "name": "Completed",
+        "visibility": "visible",
+        "icon": "✅",
+        "defaultValue": false
+      },
+      "22163f4f-75c5-40ac-bd5c-32a030d70557": {
+        "type": "object",
+        "name": "Priority",
+        "visibility": "visible",
+        "icon": "⚡",
+        "defaultValue": "a1a24193-ec19-4be4-b435-2e4f6a1b610a"
+      }
+    },
+    "id": "c7e5ba56-9a07-4a9f-b9b6-0f78334c0591",
+    "fixed": true
+  }
+  

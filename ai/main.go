@@ -7,7 +7,7 @@ import (
 )
 
 // Handler for the root route "/"
-func helloHandler(w http.ResponseWriter, r *http.Request) {
+func sumarizeHandler(w http.ResponseWriter, r *http.Request) {
 	text := r.URL.Query().Get("text")
 	data := summarize(text)
 	fmt.Fprintf(w, data)
@@ -29,7 +29,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func StartServer() {
-	http.HandleFunc("/summarize", helloHandler)
+	http.HandleFunc("/summarize", sumarizeHandler)
 
 	http.HandleFunc("/chat", chatHandler)
 

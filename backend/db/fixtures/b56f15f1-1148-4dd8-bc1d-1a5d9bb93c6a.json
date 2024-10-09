@@ -1,0 +1,29 @@
+{
+  "id": "b56f15f1-1148-4dd8-bc1d-1a5d9bb93c6a",
+  "type": "25783033-91c1-40ec-88a4-b70ae302a7d0",
+  "title": "High",
+  "pinned": false,
+  "description": "",
+  "contents": {
+    "contentUUID": {
+      "type": "text",
+      "content": "",
+      "id": "abfe9cf9-4d5b-411e-901e-2a8e608e4d90",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    }
+  },
+  "properties": {
+    "ae29371b-1de4-4d3e-98f1-7328c76f562f": "",
+    "fbd4bea1-0a76-4eb0-8d1b-91cc287ec934": ""
+  },
+  "aiReady": false,
+  "pageCustomization": {
+    "backgroundColor": "",
+    "backgroundImage": "",
+    "defaultFont": "ui-sans-serif",
+    "freeDrag": false
+  }
+}

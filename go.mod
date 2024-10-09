@@ -7,6 +7,8 @@ toolchain go1.22.7
 require (
 	github.com/adrg/xdg v0.5.0
 	github.com/fsnotify/fsnotify v1.7.0
+	github.com/google/uuid v1.6.0
+	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/tmc/langchaingo v0.1.12
 	github.com/wailsapp/wails/v2 v2.9.1
 	go.uber.org/zap v1.27.0
@@ -17,7 +19,6 @@ require (
 	github.com/dlclark/regexp2 v1.11.4 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
