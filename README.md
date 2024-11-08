@@ -8,11 +8,12 @@ It is majorly inspired by Obsidian, Capacities, and Notion.
 ## Features
 - **Markdown**: Write in markdown and get a live preview of your notes.
 - **Local First**: Your data is stored locally on your device.
-- **Grid Notes**: Create notes in a grid view by draging and resizing the notes.
+- **Grid Notes**: Create notes in a grid view by dragging and resizing the notes.
 - **Object Types**: Create different types of objects like notes, tasks, events, etc.
 
 ### Images of the current state of the project
 <img width="1761" alt="image" src="https://github.com/user-attachments/assets/6cc4fe69-ad85-4c98-ae37-baeedb931661">
+<img width="1761" alt="image" src="https://github.com/user-attachments/assets/52dae1ae-d1d6-44a5-97e4-4bb2b8a8d31c">
 <img width="1761" alt="image" src="https://github.com/user-attachments/assets/c407758f-d2df-42a7-b37c-d1bde8c76c08">
 
 
