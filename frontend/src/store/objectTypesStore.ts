@@ -1,9 +1,16 @@
 import {
+  CreateObjectType,
   GetAllObjectTypeFiles,
   ReadObjectTypeFile,
   WriteObjectTypeFile,
 } from "../../wailsjs/go/main/App";
-import { useQueries, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { v4 as uuid } from "uuid";
 import { ObjectType, ObjectTypeSchema } from "@/types/objectTypes";
 import { create } from "zustand";
@@ -12,7 +19,7 @@ const ALL_OBJECT_TYPE_QUERY_KEY = "objectTypes";
 const OBJECT_TYPE_QUERY_KEY = "objectType";
 function useAllObjectTypesIDs() {
   return useQuery<string[]>({
-    queryKey: [ALL_OBJECT_TYPE_QUERY_KEY],
+    queryKey: [ALL_OBJECT_TYPE_QUERY_KEY, "ALL"],
     queryFn: async () => {
       const result = await GetAllObjectTypeFiles();
       if (result) {
@@ -30,15 +37,10 @@ function useAllObjectTypes(ids: string[] | undefined) {
           queryKey: [OBJECT_TYPE_QUERY_KEY, id],
           queryFn: async () => {
             const data = await ReadObjectTypeFile(id);
-            console.log(data);
-            const result = ObjectTypeSchema.safeParse(
-              JSON.parse(data)
-            );
+            const result = ObjectTypeSchema.safeParse(JSON.parse(data));
             if (result.success) {
-              console.log(result.data);
               return result.data;
             } else {
-              console.log(result.error.errors);
               throw result.error.errors;
             }
           },
@@ -50,14 +52,49 @@ function useAllObjectTypes(ids: string[] | undefined) {
   return objectTypeQueries;
 }
 
+function useObjectType(id: string) {
+  return useQuery({
+    queryKey: [OBJECT_TYPE_QUERY_KEY, id],
+    queryFn: async () => {
+      const data = await ReadObjectTypeFile(id);
+      const result = ObjectTypeSchema.safeParse(JSON.parse(data));
+      if (result.success) {
+        return result.data;
+      } else {
+        throw result.error.errors;
+      }
+    },
+    retry: 0,
+    enabled: !!id,
+  });
+}
+
 function useCreateObjectType(newId: string) {
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationKey: ["createObjectType", newId],
+    mutationFn: async (newObjectType: string) => {
+      await CreateObjectType(newObjectType);
+    },
+    onMutate: async (newObjectType: string) => {
+      console.log("onMutate", newObjectType);
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: [ALL_OBJECT_TYPE_QUERY_KEY, "ALL"],
+      });
+    },
+    onError: async (error) => {
+      console.log("onError", error);
+    },
+  });
   return async (newState: Omit<ObjectType, "id">) => {
     const newObjectType: ObjectType = {
       ...newState,
       id: newId,
       baseType: "page",
     };
-    await WriteObjectTypeFile(newId, JSON.stringify(newObjectType));
+    mutate(JSON.stringify(newObjectType));
   };
 }
 
@@ -92,6 +129,7 @@ const useObjectTypesUnsavedStore = create<{
 }));
 
 export {
+  useObjectType,
   useAllObjectTypesIDs,
   useAllObjectTypes,
   useCreateObjectType,

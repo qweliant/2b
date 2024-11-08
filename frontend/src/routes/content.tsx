@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
-import { useTabsState } from "../store/layoutStore";
+import { useSidebarState, useTabsState } from "../store/layoutStore";
 import CreateObjectType from "../components/blocks/CreateObjectType";
 import {
   Dialog,
@@ -17,12 +17,11 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { LucidePin, LucideX } from "lucide-react";
-import TextEditor from "../components/blocks/content/text/text-editor";
-import VerticalContent from "../components/blocks/content/vertical-content";
+import { LucidePanelLeftOpen, LucidePin, LucideX } from "lucide-react";
+import ObjectContent from "../components/blocks/content/object-content";
 import { useQueries } from "@tanstack/react-query";
 import { ObjectInstance } from "../store/objectsStore";
-import ToDoList from "../components/blocks/content/todolist/todolist";
+// import ToDoList from "../components/blocks/content/todolist/todolist";
 const Content = () => {
   const { tabsState, setActiveTab, removeTab } = useTabsState();
   const activeTab = tabsState.activeTab;
@@ -38,6 +37,8 @@ const Content = () => {
       },
     })),
   });
+  const { setSidebarOpen, isSidebarOpen } = useSidebarState();
+
   const objectTitles = objectsQueries.map((query) => query.data);
   return (
     <div
@@ -48,6 +49,13 @@ const Content = () => {
     >
       <Tabs className="h-full" value={activeTab ?? ""}>
         <TabsList className="h-[4%] px-4">
+          {!isSidebarOpen ? (
+            <TabsTrigger value="sidebar" onClick={() => setSidebarOpen(true)}>
+              <LucidePanelLeftOpen size={18} />
+            </TabsTrigger>
+          ) : (
+            <div />
+          )}
           {tabsState.tabs.map((tab) => (
             <TabsTrigger
               key={tab.id}
@@ -93,8 +101,8 @@ const Content = () => {
             {tab.type === "createObjectType" && (
               <CreateObjectType key={tab.id} tabID={tab.id} />
             )}
-            {tab.type === "object" && <VerticalContent tabId={tab.id} />}
-            {tab.type === "todoList" && <ToDoList />}
+            {tab.type === "object" && <ObjectContent tabId={tab.id} />}
+            {/* {tab.type === "todoList" && <ToDoList />} */}
           </TabsContent>
         ))}
         <Dialog

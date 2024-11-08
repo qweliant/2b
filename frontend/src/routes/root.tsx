@@ -54,7 +54,7 @@ const Root = () => {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel className="bg-muted h-full">
-          <Header />
+          {/* <Header /> */}
           <Content />
         </ResizablePanel>
         <ResizableHandle />

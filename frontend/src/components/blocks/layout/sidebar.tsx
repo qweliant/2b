@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
+  GalleryThumbnails,
   LucideCalendar,
   LucideCuboid,
   LucideEllipsis,
@@ -84,12 +85,6 @@ const Sidebar = () => {
   const handleCreateObject = (objectType: ObjectType) => {
     if (!objectType) return;
     const tabId = uuid();
-    const propertiesMap = Object.fromEntries(
-      Object.entries(objectType?.properties ?? {}).map(([key, value]) => [
-        key,
-        "",
-      ])
-    );
     const contentUUID = uuid();
     createObject(tabId, {
       ...DEFAULT_OBJECT,
@@ -105,9 +100,8 @@ const Sidebar = () => {
           h: 12,
         },
       },
-      properties: propertiesMap,
     }).then(() => {
-      createTab(tabId, "object");
+      // createTab(tabId, "object");
     });
   };
 
@@ -144,17 +138,6 @@ const Sidebar = () => {
         >
           <LucideInbox size={16} />
           Inbox
-        </Button>
-        <Button
-          variant={"ghost"}
-          className={cn("justify-normal px-2 gap-2")}
-          size={"sm"}
-          onClick={() => {
-            createTab(DEFAULT_TODO_LIST_TAB_ID, "todoList");
-          }}
-        >
-          <LucideListTodo size={16} />
-          To do List
         </Button>
         <Button
           variant={"ghost"}
@@ -260,7 +243,9 @@ const Sidebar = () => {
                                     createTab(object.id, "object");
                                   }}
                                 >
-                                  <p className="w-full text-ellipsis whitespace-nowrap overflow-x-clip">{object.title}</p>
+                                  <p className="w-full text-ellipsis whitespace-nowrap overflow-x-clip">
+                                    {object.title}
+                                  </p>
                                   <DropdownMenu>
                                     <DropdownMenuTrigger className="group-hover:opacity-100 opacity-0">
                                       <LucideEllipsis size={15} />

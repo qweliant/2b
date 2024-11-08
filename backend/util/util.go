@@ -7,7 +7,7 @@ import (
 )
 
 func ReadJSONFile(filename string, logger *zap.Logger) (string, error) {
-	logger.Info("Reading file", zap.String("filename", filename))
+	// logger.Info("Reading file", zap.String("filename", filename))
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
@@ -16,7 +16,7 @@ func ReadJSONFile(filename string, logger *zap.Logger) (string, error) {
 }
 
 func WriteJSONFile(filename string, content string, logger *zap.Logger) error {
-	logger.Info("Writing file", zap.String("filename", filename))
+	// logger.Info("Writing file", zap.String("filename", filename))
 	err := os.WriteFile(filename, []byte(content), 0644)
 	if err != nil {
 		return err

@@ -30,6 +30,8 @@ CREATE TABLE
     description TEXT,
     color TEXT,
     icon TEXT,
+    page_customization TEXT,
+    contents TEXT,
     fixed BOOLEAN NOT NULL DEFAULT FALSE,
     object_type_id TEXT REFERENCES object_type (id) ON DELETE CASCADE, -- Foreign key to object_type
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

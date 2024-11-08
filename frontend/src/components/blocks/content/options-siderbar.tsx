@@ -139,7 +139,7 @@ const OptionsSidebar = ({
               unselectable="on"
               className={cn(
                 "flex justify-between items-center w-full border rounded-md p-2 cursor-move",
-                type !== "text" && "pointer-events-none opacity-30"
+                (type !== "text" && type !== 'image')&& "pointer-events-none opacity-30"
               )}
               onDragStart={(e) => {
                 e.dataTransfer.setData("text/plain", type);

@@ -1,124 +1,156 @@
-import React from "react";
+import React, { memo } from "react";
 import { useObject } from "@/store/objectsStore";
 import { useQuery } from "@tanstack/react-query";
 import { ObjectType } from "../../../types/objectTypes";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
-import { Checkbox } from "../../ui/checkbox";
 import { Calendar } from "../../ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { CalendarIcon, HashIcon } from "lucide-react";
 import { Switch } from "../../ui/switch";
+import { produce } from "immer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../ui/dropdown-menu";
+import ObjectSelect from "../../object-select";
 
 interface PropertiesSidebarProps {
   id: string;
 }
 
-const PropertiesSidebar = ({ id }: PropertiesSidebarProps): JSX.Element => {
-  const { data: object } = useObject(id);
-  const objectTypeId = object?.type;
-  const { data: objectType } = useQuery<ObjectType>({
-    queryKey: ["objectType", objectTypeId],
-    enabled: !!objectTypeId,
-  });
+const PropertiesSidebar = memo(
+  ({ id }: PropertiesSidebarProps): JSX.Element => {
+    const { data: object, mutate } = useObject(id);
+    const objectTypeId = object?.type;
+    const { data: objectType } = useQuery<ObjectType>({
+      queryKey: ["objectType", objectTypeId],
+      enabled: !!objectTypeId,
+    });
 
-  if (!object || !objectType) {
-    return <div>Loading...</div>;
-  }
-  return (
-    <div className="px-2 py-4 flex flex-col gap-2">
-      {Object.entries(object.properties).map(
-        ([key, value]) => {
-          if (objectType.properties[key].type === "text") {
+    if (!object || !objectType) {
+      return <div>Loading...</div>;
+    }
+    return (
+      <div className="px-2 py-4 flex flex-col gap-2">
+        {Object.entries(object.properties).map(
+          ([key, property]) => {
+            if (objectType.properties[key].type === "text") {
+              return (
+                <div key={key}>
+                  <Label>{objectType.properties[key].name}</Label>
+                  <Input
+                    value={property.value}
+                    onChange={(e) => {
+                      const draft = { ...object };
+                      const newObject = produce(draft, (draft) => {
+                        draft.properties[key].value = e.target.value;
+                      });
+                      mutate(newObject);
+                    }}
+                  />
+                </div>
+              );
+            } else if (objectType.properties[key].type === "boolean") {
+              return (
+                <div key={key} className="flex flex-col gap-2 py-2">
+                  <Label>{objectType.properties[key].name}</Label>
+                  {/* <Checkbox checked={value === "true"} /> */}
+                  <Switch />
+                </div>
+              );
+            } else if (objectType.properties[key].type === "number") {
+              return (
+                <div key={key}>
+                  <Label>{objectType.properties[key].name}</Label>
+                  <div className="relative">
+                    <Input
+                      value={property.valueNumber}
+                      type="number"
+                      className="pl-10"
+                      onChange={(e) => {
+                        const draft = { ...object };
+                        const newObject = produce(draft, (draft) => {
+                          draft.properties[key].valueNumber = Number(
+                            e.target.value
+                          );
+                        });
+                        mutate(newObject);
+                      }}
+                    />
+                    <HashIcon
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 "
+                      size={12}
+                    />
+                  </div>
+                </div>
+              );
+            } else if (objectType.properties[key].type === "date") {
+              return (
+                <div key={key}>
+                  <Label>{objectType.properties[key].name}</Label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className="w-full justify-start text-left font-normal text-muted-foreground"
+                      >
+                        <CalendarIcon className="mr-2" size={12} />
+                        {property?.valueDate
+                          ? new Date(property.valueDate).toLocaleDateString()
+                          : "Pick a date"}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-auto p-0">
+                      <DropdownMenuItem className="focus:bg-primary-background hover:bg-primary-background">
+                        <Calendar
+                          mode="single"
+                          initialFocus
+                          onDayClick={(day) => {
+                            const draft = { ...object };
+                            const newObject = produce(draft, (draft) => {
+                              draft.properties[key].valueDate =
+                                day.toISOString();
+                            });
+                            mutate(newObject);
+                          }}
+                        />
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              );
+            }
             return (
-              <div>
+              <div key={key}>
                 <Label>{objectType.properties[key].name}</Label>
-                <Input
-                  value={value}
-                  onChange={() => {
-                    console.log("change");
+                <ObjectSelect
+                  objectTypeID={objectType.properties[key].type}
+                  onValueChange={(value) => {
+                    const draft = { ...object };
+                    const newObject = produce(draft, (draft) => {
+                      draft.properties[key].referencedObjectId = value;
+                    });
+                    mutate(newObject);
                   }}
+                  value={property.referencedObjectId ?? ""}
                 />
               </div>
             );
-          } else if (objectType.properties[key].type === "boolean") {
-            return (
-              <div className="flex flex-col gap-2 py-2">
-                <Label>{objectType.properties[key].name}</Label>
-                {/* <Checkbox checked={value === "true"} /> */}
-                <Switch />
-              </div>
-            );
-          } else if (objectType.properties[key].type === "number") {
-            return (
-              <div>
-                <Label>{objectType.properties[key].name}</Label>
-                <div className="relative">
-                  <Input
-                    value={value}
-                    type="number"
-                    className="pl-10"
-                    onChange={() => {
-                      console.log("change");
-                    }}
-                  />
-                  <HashIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 " size={12} />
-                </div>
-              </div>
-            );
-          } else if (objectType.properties[key].type === "date") {
-            return (
-              <div>
-                <Label>{objectType.properties[key].name}</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className="w-full justify-start text-left font-normal text-muted-foreground"
-                    >
-                      <CalendarIcon className="mr-2" size={12} />
-                      {"Pick a date"}{" "}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar mode="single" initialFocus />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            );
           }
-          return (
-            <div>
-              <Label>{objectType.properties[key].name}</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a value" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Option 1">Option 1</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          );
-        }
-        //   (
-        //     <p>
-        //       {objectType && objectType.properties[key].name}: {value} -{" "}
-        //       {objectType && objectType.properties[key].type}
-        //     </p>
-        //   )
-      )}
-      <Button>Add Property</Button>
-    </div>
-  );
-};
+          //   (
+          //     <p>
+          //       {objectType && objectType.properties[key].name}: {value} -{" "}
+          //       {objectType && objectType.properties[key].type}
+          //     </p>
+          //   )
+        )}
+        <Button>Add Property</Button>
+      </div>
+    );
+  }
+);
 
 export default PropertiesSidebar;

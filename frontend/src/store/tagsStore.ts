@@ -13,11 +13,13 @@ const TAG_PRIORITY_HIGH_UUID = "a1a24193-ec19-4be4-b435-2e4f6a1b610a";
 const TAG_PRIORITY_MEDIUM_UUID = "b56f15f1-1148-4dd8-bc1d-1a5d9bb93c6a";
 const TAG_PRIORITY_LOW_UUID = "d7bfaf5f-cd1a-490b-a76b-ffab2d5cafac";
 
-const TagInstanceSchema = ObjectInstanceSchema.extend({
-  properties: z.object({
-    [TAG_COLOR_UUID]: z.string(),
-  }),
-});
+// const TagInstanceSchema = ObjectInstanceSchema.extend({
+//   properties: z.object({
+//     [TAG_COLOR_UUID]: z.string(),
+//   }),
+// });
+
+const TagInstanceSchema = ObjectInstanceSchema;
 
 type TagInstance = z.infer<typeof TagInstanceSchema>;
 

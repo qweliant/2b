@@ -7,14 +7,23 @@ const DEFAULT_TASK_TYPE_UUID = "c7e5ba56-9a07-4a9f-b9b6-0f78334c0591";
 const VisibilitySchema = z.enum(["visible", "hidden", "hidden_empty"]);
 
 const BasePropertyTypes = z.enum(["text", "number", "date", "boolean"]);
+const BasePropertyDefaultValues = {
+  text: "",
+  number: 0,
+  date: new Date(),
+  boolean: false,
+}
 
 const BasePropertySchema = z.object({
+  id: z.string().uuid(),
   type: BasePropertyTypes,
   name: z.string(),
   aiAutomated: z.boolean().optional(),
   visibility: VisibilitySchema.default("visible"),
   icon: z.string().optional(),
   defaultValue: z.any().optional(),
+  isObjectReference: z.boolean().default(false),
+  objectTypeId: z.string().uuid().optional(),
 });
 
 const NumberFormats = z.enum(["number", "currency", "percent", "phone"]);
@@ -62,6 +71,10 @@ const DEFAULT_PROPERTY_VALUE = PropertySchema.parse({
   name: "Text",
   visibility: "visible",
   icon: "📝",
+  defaultValue: "",
+  isObjectReference: false,
+  objectTypeId: undefined,
+  id: "00000000-0000-0000-0000-000000000000",
 });
 
 const PropertyMapSchema = z.record(PropertySchema);
@@ -99,6 +112,7 @@ export type { ObjectProperty, ObjectType, ObjectPropertyMap, PropertyTypeEnum };
 
 export {
   BasePropertyTypes as PropertyType,
+  BasePropertyDefaultValues as PropertyDefaultValues,
   BasePropertySchema,
   PropertySchema,
   ObjectTypeSchema,

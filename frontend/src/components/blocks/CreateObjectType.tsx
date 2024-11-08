@@ -18,6 +18,7 @@ import {
   ObjectPropertyMap,
   ObjectType,
   ObjectTypeSchema,
+  PropertyDefaultValues,
   PropertyType,
   PropertyTypeEnum,
 } from "../../types/objectTypes";
@@ -150,8 +151,11 @@ export default function CreateObjectType(props: { tabID: string }) {
         if (!result.success) {
           draft[key].name =
             allObjectTypes.find((t) => {
+              draft[key].isObjectReference = true;
               return t?.id === type;
             })?.name ?? "Unknown";
+        } else {
+          draft[key].defaultValue = JSON.stringify(PropertyDefaultValues[type]);
         }
       });
     });
@@ -229,19 +233,31 @@ export default function CreateObjectType(props: { tabID: string }) {
               <Button type="submit">Create Object Type</Button>
             </div>
             <Separator className="my-2" />
-            <CardTitle>Edit properties</CardTitle>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Add, remove, and customize the properties of this object type.{" "}
-                <a href="#" className="text-primary hover:underline">
-                  Learn more
-                </a>
-                .
-              </p>
+            <p className="text-xl">Edit properties</p>
+            <p className="text-sm text-muted-foreground">
+              Add, remove, and customize the properties of this object type.{" "}
+              <a href="#" className="text-primary hover:underline">
+                Learn more
+              </a>
+              .
+            </p>
+            <div className="space-y-4 h-full py-4 overflow-y-auto max-h-[400px]">
               {Object.entries(properties).map(([key, prop], index) => (
                 <div key={key} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    {prop.icon} {prop.name}
+                    {prop.icon}
+                    <Input
+                      value={prop.name}
+                      onChange={(e) => {
+                        setProperties((prev) => {
+                          return produce(prev, (draft) => {
+                            draft[key].name = e.target.value;
+                          });
+                        });
+                      }}
+                      placeholder="Enter a name"
+                      className="border-transparent hover:border-input"
+                    />
                   </div>
                   <div className="flex items-center space-x-2">
                     <Select
@@ -291,19 +307,22 @@ export default function CreateObjectType(props: { tabID: string }) {
                   </div>
                 </div>
               ))}
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={(e) => {
-                  e.preventDefault();
-                  addProperty(uuid(), {
-                    ...DEFAULT_PROPERTY_VALUE,
-                  });
-                }}
-              >
-                <PlusIcon className="mr-2 h-4 w-4" /> Add property
-              </Button>
             </div>
+            <Button
+              variant="outline"
+              className="w-full my-2"
+              onClick={(e) => {
+                e.preventDefault();
+                const propertyID = uuid();
+                addProperty(propertyID, {
+                  ...DEFAULT_PROPERTY_VALUE,
+                  id: propertyID,
+                  objectTypeId: props.tabID,
+                });
+              }}
+            >
+              <PlusIcon className="mr-2 h-4 w-4" /> Add property
+            </Button>
           </form>
         </Form>
       </div>

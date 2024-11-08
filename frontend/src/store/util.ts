@@ -28,6 +28,7 @@ function useMutableQuery<T>({
 
   const { mutate, isPending, isError, isSuccess } = useMutation({
     mutationFn: mutateFn,
+    mutationKey: ["mutate", queryKey],
     onMutate: async (newState: T) => {
       await queryClient.cancelQueries({
         queryKey,
@@ -35,7 +36,6 @@ function useMutableQuery<T>({
       const previousData = queryClient.getQueryData(queryKey);
       queryClient.setQueryData(queryKey, (old: T) => {
         editFn(old, newState);
-        console.log("new state", newState);
       });
       return { previousData };
     },

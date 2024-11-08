@@ -1,12 +1,14 @@
 import { z } from "zod";
 import {
+  CreateObject,
   DeleteObjectFile,
   GetAllObjects,
-  ReadObjectFile,
-  WriteObjectFile,
+  GetObject,
+  UpdateObject,
 } from "../../wailsjs/go/main/App";
 import { useQueryWrapper } from "./util";
 import {
+  useMutation,
   useQueries,
   useQuery,
   useQueryClient,
@@ -27,15 +29,25 @@ const ContentTypeSchema = z.object({
 });
 type ObjectContent = z.infer<typeof ContentTypeSchema>;
 
-const PropertyValueMapSchema = z.record(z.string());
+const PropertyValueSchema = z.object({
+  id: z.string().uuid(),
+  objectId: z.string().uuid(),
+  value: z.string().optional(),
+  valueBoolean: z.boolean().optional(),
+  valueNumber: z.number().optional(),
+  valueDate: z.string().optional(),
+  referencedObjectId: z.string().uuid().optional(),
+});
 
-const ObjectInstanceSchema = z.object({
+const PropertyValueMapSchema = z.record(PropertyValueSchema);
+
+const ObjectInstanceSchema = z.strictObject({
   id: z.string().uuid(),
   type: z.string(),
   title: z.string(),
   pinned: z.boolean().default(false),
   description: z.string().optional(),
-  contents: z.record(ContentTypeSchema),
+  contents: z.record(ContentTypeSchema).optional(),
   properties: PropertyValueMapSchema,
   aiReady: z.boolean().default(false).optional(),
   pageCustomization: z.object({
@@ -67,15 +79,26 @@ const DEFAULT_OBJECT: ObjectInstance = {
 
 function useCreateObject() {
   const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: async (newObject: string) => {
+      await CreateObject(newObject);
+    },
+    mutationKey: ["createObject"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["objects"],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
   return async (newId: string, newState: Omit<ObjectInstance, "id">) => {
     const newObject: ObjectInstance = {
       ...newState,
       id: newId,
     };
-    await WriteObjectFile(newId, JSON.stringify(newObject));
-    queryClient.invalidateQueries({
-      queryKey: ["objects"],
-    });
+    mutate(JSON.stringify(newObject));
   };
 }
 
@@ -98,11 +121,12 @@ function useAllObjects(ids: string[] | undefined) {
       ? ids.map((id) => ({
           queryKey: ["object", id],
           queryFn: async () => {
-            const data = await ReadObjectFile(id);
+            const data = await GetObject(id);
             const result = ObjectInstanceSchema.safeParse(JSON.parse(data));
             if (result.success) {
               return result.data;
             } else {
+              console.error(result.error.errors);
               throw result.error.errors;
             }
           },
@@ -114,17 +138,25 @@ function useAllObjects(ids: string[] | undefined) {
   return objectQueries;
 }
 
+function useObjectsOfType(type: string) {
+  const { data: allObjectIDs } = useAllObjectsIDs();
+  const allObjectsQueries = useAllObjects(allObjectIDs);
+  const allObjects = allObjectsQueries.map((query) => query.data);
+  const filteredObjects =  allObjects.filter((object) => object && object.type === type);
+  return filteredObjects as ObjectInstance[];
+}
+``
 function useObject(id: string) {
   return useQueryWrapper<ObjectInstance>({
     queryKey: ["object", id],
     queryFn: async () => {
-      return JSON.parse(await ReadObjectFile(id));
+      return JSON.parse(await GetObject(id));
     },
     editFn: (old: ObjectInstance, newState: ObjectInstance) => {
       return { ...old, ...newState };
     },
     mutateFn: (newState: ObjectInstance) => {
-      return WriteObjectFile(newState.id, JSON.stringify(newState));
+      return UpdateObject(JSON.stringify(newState));
     },
   });
 }
@@ -184,5 +216,6 @@ export {
   useDeleteObject,
   useDefaultFont,
   useBackgroundColor,
+  useObjectsOfType,
   DEFAULT_OBJECT,
 };

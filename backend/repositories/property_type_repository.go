@@ -35,6 +35,30 @@ func (repo *PropertyTypeRepository) CreatePropertyType(propertyType *models.Prop
 	return err
 }
 
+func (repo *PropertyTypeRepository) CreatePropertyTypes(propertyTypes *[]models.PropertyType) error {
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	stmt, err := tx.Prepare("INSERT INTO property_type (id, type, name, ai_automated, visibility, icon, default_value, is_object_reference, object_type_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	for _, propertyType := range *propertyTypes {
+
+		_, err := stmt.Exec(propertyType.ID, propertyType.Type, propertyType.Name, propertyType.AIAutomated, propertyType.Visibility, propertyType.Icon, propertyType.DefaultValue, propertyType.IsObjectReference, propertyType.ObjectTypeID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	return tx.Commit()
+}
+
 func (repo *PropertyTypeRepository) GetPropertyType(propertyTypeID string) (*models.PropertyType, error) {
 	propertyType := &models.PropertyType{}
 	err := repo.db.QueryRow(
