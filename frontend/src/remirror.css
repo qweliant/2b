@@ -1,0 +1,180 @@
+.remirror-theme {
+  /* The following makes it easier to measure components within the editor. */
+  box-sizing: border-box;
+  }
+  
+  .remirror-theme *,
+  .remirror-theme *:before,
+  .remirror-theme *:after {
+  box-sizing: inherit;
+  }
+  
+  .remirror-theme {
+  --rmr-color-background: hsl(var(--background));
+  --rmr-color-border: hsl(var(--border));
+  --rmr-color-foreground: hsl(var(--foreground));
+  --rmr-color-muted: hsl(var(--muted));
+  --rmr-color-primary: hsl(var(--primary));
+  --rmr-color-secondary: hsl(var(--secondary));
+  --rmr-color-primary-text: hsl(var(--primary-foreground));
+  --rmr-color-secondary-text: hsl(var(--secondary-foreground));
+  --rmr-color-text: hsl(var(--foreground));
+  --rmr-color-faded: hsla(var(--foreground), 0.9);
+  --rmr-color-active-background: hsla(var(--background), 0.85);
+  --rmr-color-active-border: none;
+  --rmr-color-active-foreground: hsl(var(--foreground));
+  --rmr-color-active-muted: hsl(var(--muted));
+  --rmr-color-active-primary: hsl(var(--primary));
+  --rmr-color-active-secondary: hsl(var(--secondary));
+  --rmr-color-active-primary-text: hsl(var(--primary-foreground));
+  --rmr-color-active-secondary-text: hsl(var(--secondary-foreground));
+  --rmr-color-active-text: hsl(var(--foreground));
+  --rmr-color-active-faded: hsla(var(--foreground), 0.9);
+  --rmr-color-hover-background: hsla(var(--background), 0.93);
+  --rmr-color-hover-border: none;
+  --rmr-color-hover-foreground: hsl(var(--foreground));
+  --rmr-color-hover-muted: hsl(var(--muted));
+  --rmr-color-hover-primary: hsl(var(--primary));
+  --rmr-color-hover-secondary: hsl(var(--secondary));
+  --rmr-color-hover-primary-text: hsl(var(--primary-foreground));
+  --rmr-color-hover-secondary-text: hsl(var(--secondary-foreground));
+  --rmr-color-hover-text: hsl(var(--foreground));
+  --rmr-color-hover-faded: hsla(var(--foreground), 0.9);
+  --rmr-color-shadow-1: none;
+  --rmr-color-shadow-2: none;
+  --rmr-color-shadow-3: none;
+  --rmr-color-backdrop: rgba(0, 0, 0, 0.9);
+  --rmr-color-outline: rgba(121, 99, 210, 0.4);
+  --rmr-color-table-default-border: hsl(var(--border));
+  --rmr-color-table-default-cell: hsl(var(--foreground));
+  --rmr-color-table-default-controller: hsl(var(--muted));
+  --rmr-color-table-selected-border: hsl(var(--primary));
+  --rmr-color-table-selected-cell: hsl(var(--secondary));
+  --rmr-color-table-selected-controller: hsl(var(--primary));
+  --rmr-color-table-preselect-border: hsl(var(--primary));
+  --rmr-color-table-preselect-cell: hsl(var(--foreground));
+  --rmr-color-table-preselect-controller: hsl(var(--primary));
+  --rmr-color-table-predelete-border: hsl(var(--destructive));
+  --rmr-color-table-predelete-cell: hsl(var(--destructive));
+  --rmr-color-table-predelete-controller: hsl(var(--destructive));
+  --rmr-color-table-mark: hsl(var(--muted-foreground));
+  --rmr-radius-border: 0;
+  --rmr-radius-extra: 0.5rem;
+  --rmr-radius-circle: 50%;
+  /* --rmr-font-family-default: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; */
+  --rmr-font-family-heading: inherit;
+  --rmr-font-family-mono: Menlo, monospace;
+  --rmr-font-size-0: 12px;
+  --rmr-font-size-1: 14px;
+  --rmr-font-size-2: 16px;
+  --rmr-font-size-3: 20px;
+  --rmr-font-size-4: 24px;
+  --rmr-font-size-5: 32px;
+  --rmr-font-size-6: 48px;
+  --rmr-font-size-7: 64px;
+  --rmr-font-size-8: 96px;
+  --rmr-font-size-default: 16px;
+  --rmr-space-1: 4px;
+  --rmr-space-2: 8px;
+  --rmr-space-3: 16px;
+  --rmr-space-4: 32px;
+  --rmr-space-5: 64px;
+  --rmr-space-6: 128px;
+  --rmr-space-7: 256px;
+  --rmr-space-8: 512px;
+  --rmr-font-weight-bold: 700;
+  --rmr-font-weight-default: 400;
+  --rmr-font-weight-heading: 700;
+  --rmr-letter-spacing-tight: -1px;
+  --rmr-letter-spacing-default: normal;
+  --rmr-letter-spacing-loose: 1px;
+  --rmr-letter-spacing-wide: 3px;
+  --rmr-line-height-heading: 1.25em;
+  --rmr-line-height-default: 1.5em;
+  --rmr-box-shadow-1: none;
+  --rmr-box-shadow-2: none;
+  --rmr-box-shadow-3: none;
+  
+  font-family: var(--rmr-font-family-default);
+  line-height: var(--rmr-line-height-default);
+  font-weight: var(--rmr-font-weight-default);
+  }
+  
+  .remirror-theme h1,
+  .remirror-theme h2,
+  .remirror-theme h3,
+  .remirror-theme h4,
+  .remirror-theme h5,
+  .remirror-theme h6 {
+  color: hsl(var(--foreground));
+  font-family: var(--rmr-font-family-heading);
+  line-height: var(--rmr-line-height-heading);
+  font-weight: var(--rmr-font-weight-heading);
+  }
+  
+  .remirror-theme h1 {
+  font-size: var(--rmr-font-size-5);
+  }
+  
+  .remirror-theme h2 {
+  font-size: var(--rmr-font-size-4);
+  }
+  
+  .remirror-theme h3 {
+  font-size: var(--rmr-font-size-3);
+  }
+  
+  .remirror-theme h4 {
+  font-size: var(--rmr-font-size-2);
+  }
+  
+  .remirror-theme h5 {
+  font-size: var(--rmr-font-size-1);
+  }
+  
+  .remirror-theme h6 {
+  font-size: var(--rmr-font-size-0);
+  }
+  
+  .remirror-theme .ProseMirror {
+  min-height: var(--rmr-space-6);
+  box-shadow: none;
+  padding: var(--rmr-space-3);
+  border-radius: var(--rmr-radius-border);
+  outline: none;
+  }
+  
+  .remirror-theme .ProseMirror:active,
+  .remirror-theme .ProseMirror:focus {
+  box-shadow: none;
+  }
+  
+  .remirror-theme .ProseMirror p,
+  .remirror-theme .ProseMirror h1,
+  .remirror-theme .ProseMirror h2,
+  .remirror-theme .ProseMirror h3,
+  .remirror-theme .ProseMirror h4,
+  .remirror-theme .ProseMirror h4,
+  .remirror-theme .ProseMirror h5,
+  .remirror-theme .ProseMirror h6,
+  .remirror-theme .ProseMirror span {
+  margin: 0;
+  margin-bottom: var(--rmr-space-2);
+  }
+  
+  .remirror-is-empty:first-of-type::before {
+  position: absolute;
+  color: #aaa;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+  content: attr(data-placeholder);
+  }
+
+  .remirror-editor.ProseMirror {
+    overflow-y: auto;
+  }
+
+  .remirror-editor-wrapper {
+    padding-top: 0px;
+  }

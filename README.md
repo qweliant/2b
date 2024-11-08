@@ -1,19 +1,34 @@
-# README
+# Liha - Open source intiutive second brain studio. 
 
-## About
+Liha is a project which comes out my own need to have a second brain software which is local-first, open-source and doesn't cost me a fortune to have AI nicely integrated into it.
+It is a tool to help you organize your thoughts, notes, and ideas in a structured way. It is designed to be simple, easy to use, and flexible.
 
-This is the official Wails React-TS template.
+It is majorily inspired by Obsidian, Capacities and Notion.
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+## Features
+- **Markdown**: Write in markdown and get a live preview of your notes.
+- **Local First**: Your data is stored locally on your device.
+- **Grid Notes**: Create notes in a grid view - drag and resize the notes.
+- **Object Types**: Create different types of objects like notes, tasks, events, etc.
 
-## Live Development
+### Images of current state of the project
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+### Todo for first release:
+- [ ] Implement the graph view
+- [ ] Implement the search functionality
+- [ ] Implement views
+- [ ] Fix a lot of bugs
+- [ ] Cleanup the codebase
+- [ ] Features like bubble menus, icons, table of content and more.
+- [ ] Calendar view
 
-## Building
 
-To build a redistributable, production mode package, use `wails build`.
+## Usage
+Make sure you have the dependencies installed for the golang backend and the frontend - which uses pnpm.
+
+Run `wails dev` to start the application in development mode.
+
+## Contributing
+NOTE: The project is in early stages of development. There is a lot of work to be done and will find a lot of code to be messy - I am working towards the major features and will refactor the codebase once the major features are implemented.
+
+Feel free to explore around and make a PR if you find something interesting to add or fix.

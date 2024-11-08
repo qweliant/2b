@@ -1,0 +1,29 @@
+{
+  "id": "a1a24193-ec19-4be4-b435-2e4f6a1b610a",
+  "type": "25783033-91c1-40ec-88a4-b70ae302a7d0",
+  "title": "Medium",
+  "pinned": false,
+  "description": "",
+  "contents": {
+    "contentUUID": {
+      "type": "text",
+      "content": "",
+      "id": "2729fc27-6e33-440d-a5d9-74b06ed97ba6",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    }
+  },
+  "properties": {
+    "ae29371b-1de4-4d3e-98f1-7328c76f562f": "",
+    "fbd4bea1-0a76-4eb0-8d1b-91cc287ec934": ""
+  },
+  "aiReady": false,
+  "pageCustomization": {
+    "backgroundColor": "",
+    "backgroundImage": "",
+    "defaultFont": "ui-sans-serif",
+    "freeDrag": false
+  }
+}

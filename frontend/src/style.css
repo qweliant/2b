@@ -1,6 +1,16 @@
+@import "../node_modules/react-grid-layout/css/styles.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  ul, ol {
+    list-style: revert;
+    padding-left: 24px;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -40,7 +50,7 @@
     --primary-foreground: 240 5.9% 10%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
+    --muted: 240 3.7% 8.9%;
     --muted-foreground: 240 5% 64.9%;
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"os"
 	"strings"
 
 	"github.com/wailsapp/wails/v2"
@@ -30,16 +31,21 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
+	icon, err := os.ReadFile("build/Liha.png")
+	if err != nil {
+		println("Error reading icon file:", err.Error())
+	}
 	// Create application with options
-	err := wails.Run(&options.App{
-		Title:  "app",
-		Width:  1024,
-		Height: 768,
+	err = wails.Run(&options.App{
+		Title:  "liha",
+		Width:  1920,
+		Height: 1080,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:        app.startup,
+		BackgroundColour:  &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+		OnStartup:         app.startup,
+		HideWindowOnClose: true,
 		Bind: []interface{}{
 			app,
 		},
@@ -52,6 +58,11 @@ func main() {
 				UseToolbar:                 true,
 				HideToolbarSeparator:       true,
 			},
+			About: &mac.AboutInfo{
+				Title:   "Liha",
+				Message: "Liha is a desktop app for managing your tasks.",
+				Icon:    icon,
+			},
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
 			UniqueId:               "e3984e08-28dc-4e3d-b70a-45e961589cdc",
@@ -62,4 +73,5 @@ func main() {
 	if err != nil {
 		println("Error:", err.Error())
 	}
+
 }

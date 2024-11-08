@@ -1,12 +1,37 @@
 .draggable {
-    cursor: move;
-    --wails-draggable: drag;
-    z-index: 1000;
+  cursor: move;
+  --wails-draggable: drag;
+  z-index: 1000;
 }
 
 .disable-select {
-    -webkit-user-select: none;  
-    -moz-user-select: none;    
-    -ms-user-select: none;      
-    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
+
+.allow-select {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: hsl(var(--primary)) !important;
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  border-radius: 0.4rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+/* 
+.dotted-background {
+  background-image: radial-gradient(circle at 1px 1px, gray 1px, transparent 0);
+  background-size: 40px 40px;
+} */
