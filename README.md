@@ -1,34 +1,37 @@
-# Liha - Open source intiutive second brain studio. 
+# Liha - Open source intuitive second brain studio. 
 
-Liha is a project which comes out my own need to have a second brain software which is local-first, open-source and doesn't cost me a fortune to have AI nicely integrated into it.
-It is a tool to help you organize your thoughts, notes, and ideas in a structured way. It is designed to be simple, easy to use, and flexible.
+Liha is a project that comes out of my own need to have a second brain software that is local-first, open-source, and doesn't cost me a fortune to have AI nicely integrated into it.
+It is a tool for organizing thoughts, notes, and ideas in a structured way. It is designed to be simple, easy to use, and flexible.
 
-It is majorily inspired by Obsidian, Capacities and Notion.
+It is majorly inspired by Obsidian, Capacities, and Notion.
 
 ## Features
 - **Markdown**: Write in markdown and get a live preview of your notes.
 - **Local First**: Your data is stored locally on your device.
-- **Grid Notes**: Create notes in a grid view - drag and resize the notes.
+- **Grid Notes**: Create notes in a grid view by draging and resizing the notes.
 - **Object Types**: Create different types of objects like notes, tasks, events, etc.
 
-### Images of current state of the project
+### Images of the current state of the project
+<img width="1761" alt="image" src="https://github.com/user-attachments/assets/6cc4fe69-ad85-4c98-ae37-baeedb931661">
+<img width="1761" alt="image" src="https://github.com/user-attachments/assets/c407758f-d2df-42a7-b37c-d1bde8c76c08">
 
-### Todo for first release:
+
+### Todo for the first release:
 - [ ] Implement the graph view
 - [ ] Implement the search functionality
 - [ ] Implement views
 - [ ] Fix a lot of bugs
 - [ ] Cleanup the codebase
-- [ ] Features like bubble menus, icons, table of content and more.
+- [ ] Features like bubble menus, icons, table of contents, and more.
 - [ ] Calendar view
 
 
 ## Usage
-Make sure you have the dependencies installed for the golang backend and the frontend - which uses pnpm.
+Make sure you have the dependencies installed for the Go backend and the frontend - which uses pnpm.
 
 Run `wails dev` to start the application in development mode.
 
 ## Contributing
-NOTE: The project is in early stages of development. There is a lot of work to be done and will find a lot of code to be messy - I am working towards the major features and will refactor the codebase once the major features are implemented.
+NOTE: The project is in the early stages of development. There is a lot of work to be done and will find a lot of code to be messy - I am working towards the major features and will refactor the codebase once the major features are implemented.
 
 Feel free to explore around and make a PR if you find something interesting to add or fix.
