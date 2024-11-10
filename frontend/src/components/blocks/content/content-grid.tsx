@@ -12,6 +12,7 @@ import { ReactFrameworkOutput } from "@remirror/react";
 import { GetSummary } from "../../../../wailsjs/go/main/App";
 import { useMessageStore } from "../../../store/chatStore";
 import TextBlock from "./text/text-block";
+import ImageBlock from "./image/image-block";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -82,8 +83,8 @@ const ContentGrid = ({
             if (!newLayoutItem) return;
             contentObj.x = newLayoutItem.x;
             contentObj.y = newLayoutItem.y;
-            contentObj.w = newLayoutItem.w === 0 ? 12 : newLayoutItem.w;
-            contentObj.h = newLayoutItem.h === 0 ? 12 : newLayoutItem.h;
+            contentObj.w = newLayoutItem.w === 0 ? 6 : newLayoutItem.w;
+            contentObj.h = newLayoutItem.h === 0 ? 6 : newLayoutItem.h;
           });
         });
         if (newObject === object) return;
@@ -93,19 +94,37 @@ const ContentGrid = ({
       {object.contents &&
         Object.entries(object.contents).map(([key, value]) => {
           const contentObj = value;
-          if (contentObj.type !== "text") return null;
-          return (
-            <div className={cn("content-block relative group")} key={key}>
-              <TextBlock
-                editorRef={editorRef}
-                object={object}
-                contentObject={contentObj}
-                defaultFont={defaultFont}
-                contentKey={key}
-                mutate={mutate}
-              />
-            </div>
-          );
+          if (contentObj.type === "text") {
+            return (
+              <div className={cn("content-block relative group")} key={key}>
+                <TextBlock
+                  editorRef={editorRef}
+                  object={object}
+                  contentObject={contentObj}
+                  defaultFont={defaultFont}
+                  contentKey={key}
+                  mutate={mutate}
+                />
+              </div>
+            );
+          } else if (contentObj.type === "image") {
+            return (
+              <div
+                className={cn(
+                  "content-block relative group border overflow-clip rounded-md"
+                )}
+                key={key}
+              >
+                <ImageBlock
+                  object={object}
+                  contentObject={contentObj}
+                  contentKey={key}
+                  mutate={mutate}
+                />
+              </div>
+            );
+          }
+          return null;
         })}
     </ResponsiveGridLayout>
   );

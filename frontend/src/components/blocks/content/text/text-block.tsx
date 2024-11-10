@@ -76,4 +76,4 @@ const TextBlock: React.FC<TextBlockProps> = ({
   );
 };
 
-export default TextBlock;
+export default React.memo(TextBlock);
