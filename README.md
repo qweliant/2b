@@ -22,13 +22,16 @@ It is majorly inspired by Obsidian, Capacities, and Notion.
 - [ ] Implement the search functionality
 - [ ] Implement views
 - [ ] Fix a lot of bugs
+- [ ] E2E Encryption
+- [ ] Sync Support
+- [ ] Local AI support (using LM Studio)
 - [ ] Cleanup the codebase
 - [ ] Features like bubble menus, icons, table of contents, and more.
 - [ ] Calendar view
 
 
 ## Usage
-Make sure you have the dependencies installed for the Go backend and the frontend - which uses pnpm.
+Ensure you have the dependencies installed for the Go backend and the frontend - which uses pnpm.
 
 Run `wails dev` to start the application in development mode.
 
