@@ -31,7 +31,7 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
-	icon, err := os.ReadFile("build/Liha.png")
+	icon, err := os.ReadFile("build/appicon.png")
 	if err != nil {
 		println("Error reading icon file:", err.Error())
 	}

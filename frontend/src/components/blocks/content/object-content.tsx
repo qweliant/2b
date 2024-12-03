@@ -29,6 +29,7 @@ import ContentTag from "./content-tags";
 import { ImperativePanelHandle } from "react-resizable-panels";
 import PropertiesSidebar from "./properties-sidebar";
 import ContentGridMemo from "./content-grid";
+import { Switch } from "../../ui/switch";
 const ObjectContent = ({ tabId }: { tabId: string }) => {
   const {
     data: object,
@@ -45,11 +46,11 @@ const ObjectContent = ({ tabId }: { tabId: string }) => {
   const editorRef = useRef<ReactFrameworkOutput<Extensions>>(null);
   const { backgroundColor, setBackgroundColor } = useBackgroundColor(tabId);
   const { defaultFont, setDefaultFont } = useDefaultFont(tabId);
-  const [freeDrag, setFreeDrag] = useState(false);
+  const [freeDrag, setFreeDrag] = useState(true);
 
   const propertiesSidebarRef = useRef<ImperativePanelHandle>(null);
   const optionsSidebarRef = useRef<ImperativePanelHandle>(null);
-  const [propertiesSidebarOpen, setPropertiesSidebarOpen] = useState(true);
+  const [propertiesSidebarOpen, setPropertiesSidebarOpen] = useState(false);
   const [optionsSidebarOpen, setOptionsSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -109,7 +110,7 @@ const ObjectContent = ({ tabId }: { tabId: string }) => {
         <ResizableHandle withHandle />
         <ResizablePanel className={cn("overflow-y-scroll py-2 h-full")}>
           <div className="flex justify-between items-center px-4">
-            <div className="flex gap-1 items-center w-[50%]">
+            <div className="flex gap-1 items-center w-[50%] mb-1">
               <Button
                 variant={"ghost"}
                 size={"iconSm"}
@@ -137,7 +138,7 @@ const ObjectContent = ({ tabId }: { tabId: string }) => {
                 )}
               </Button>
               <Input
-                className="border-none text-xl font-semibold w-full focus:border focus:border-border "
+                className="border-none text-xl font-semibold w-full focus:border focus:border-border focus:shadow-inner focus:shadow-secondary/20 hover:bg-secondary/10 focus:bg-secondary/30"
                 placeholder="Enter Title here"
                 value={object.title}
                 onChange={(e) => {

@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Sidebar = () => {
-  const { createTab } = useTabsState();
+  const { createTab, tabsState } = useTabsState();
   const { setSidebarOpen } = useSidebarState();
   const { addObjectType } = useObjectTypesUnsavedStore();
   const { data: ids } = useAllObjectTypesIDs();
@@ -101,13 +101,13 @@ const Sidebar = () => {
         },
       },
     }).then(() => {
-      // createTab(tabId, "object");
+      createTab(tabId, "object");
     });
   };
 
   return (
     <div className="h-full flex flex-col gap-4 px-3 py-2 disable-select bg-muted">
-      <div className="flex h-[22px] justify-between">
+      <div className="flex h-[22px] justify-between draggable">
         <div />
         <Button
           size={"iconSm"}
@@ -117,15 +117,6 @@ const Sidebar = () => {
           <LucidePanelLeftClose size={18} />
         </Button>
       </div>
-      {/* <Select>
-        <SelectTrigger className="h-8">
-          <SelectValue placeholder="Workspace" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="1">Workspace 1</SelectItem>
-          <SelectItem value="2">Workspace 2</SelectItem>
-        </SelectContent>
-      </Select> */}
 
       <div className="flex flex-col gap-2">
         <Button
@@ -139,7 +130,7 @@ const Sidebar = () => {
           <LucideInbox size={16} />
           Inbox
         </Button>
-        <Button
+        {/* <Button
           variant={"ghost"}
           className={cn("justify-normal px-2 gap-2")}
           size={"sm"}
@@ -147,7 +138,7 @@ const Sidebar = () => {
         >
           <LucideCalendar size={16} />
           Calendar
-        </Button>
+        </Button> */}
       </div>
       <Separator />
       <div className="flex items-center gap-2 px-2 text-sm text-muted-foreground">
@@ -205,8 +196,13 @@ const Sidebar = () => {
                       className="pb-1 w-full"
                     >
                       <div className="flex items-center justify-between w-full group">
-                        <div className="flex gap-1">
-                          <p>{objectType?.icon}</p>
+                        <div className="flex gap-2 items-center">
+                          <div
+                            className={cn(
+                              "w-3 h-3 rounded-full ml-0.5",
+                              objectType.color
+                            )}
+                          />
                           <p>{objectType?.name}</p>
                         </div>
                         <DropdownMenu>
@@ -226,7 +222,7 @@ const Sidebar = () => {
                         </DropdownMenu>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="border-l pb-0">
+                    <AccordionContent className="border-l pb-0 ml-2">
                       <div className="flex flex-col gap-1">
                         {allObjects &&
                           allObjects.map((object) => {
@@ -238,7 +234,11 @@ const Sidebar = () => {
                               return (
                                 <div
                                   key={object.id}
-                                  className="ml-4 cursor-pointer hover:bg-secondary p-1 rounded-sm transition-colors ease-in-out duration-150 group flex justify-between items-center"
+                                  className={cn(
+                                    "ml-3 cursor-pointer hover:bg-secondary p-1 px-2 rounded-sm transition-colors ease-in-out duration-150 group flex justify-between items-center",
+                                    tabsState.activeTab === object.id &&
+                                      "bg-secondary shadow-inner rounded-md"
+                                  )}
                                   onClick={() => {
                                     createTab(object.id, "object");
                                   }}

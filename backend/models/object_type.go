@@ -11,9 +11,9 @@ const (
 )
 
 const (
-	BaseObjectTypeA BaseObjectType = "TypeA"
-	BaseObjectTypeB BaseObjectType = "TypeB"
-	BaseObjectTypeC BaseObjectType = "TypeC"
+	PageObjectType     BaseObjectType = "page"
+	TagObjectType      BaseObjectType = "tag"
+	GoogleCalEventType BaseObjectType = "google_cal_event"
 )
 
 type ObjectType struct {

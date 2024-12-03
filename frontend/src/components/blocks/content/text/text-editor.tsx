@@ -34,6 +34,7 @@ import { prosemirrorNodeToHtml } from "remirror";
 import useDebounce from "../../../../lib/use-debounce";
 import { ThemeProvider } from "@remirror/react";
 import { Button } from "../../../ui/button";
+import { cn } from "../../../../lib/utils";
 // import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
 const extensions = () => [
   new PlaceholderExtension({
@@ -83,12 +84,13 @@ interface TextEditorProps {
   mutate: (newState: string) => void;
   content: string;
   defaultFont: string;
+  freeDrag: boolean;
 }
 
 const TextEditor = forwardRef<
   ReactFrameworkOutput<Extensions>,
   TextEditorProps
->(({ mutate, content, defaultFont }, ref) => {
+>(({ mutate, content, defaultFont,freeDrag }, ref) => {
   const { manager, getContext, state, setState } = useRemirror({
     extensions: extensions,
     content: content,
@@ -106,7 +108,13 @@ const TextEditor = forwardRef<
   useImperativeHandle(ref, () => getContext(), [getContext]);
 
   return (
-    <div className="h-full rounded-md hover:border-border bg-background border border-transparent ">
+    <div
+      className={cn(
+        "h-full rounded-lg bg-background border border-transparent ",
+        freeDrag && "border-border/80 hover:border-border"
+
+      )}
+    >
       <div className="h-full overflow-y-scroll">
         <div className="remirror-theme cursor-text">
           <ThemeProvider

@@ -112,7 +112,7 @@ const OptionsSidebar = ({
   }, []);
   return (
     <Tabs defaultValue="add">
-      <TabsList className="w-full shadow-inner rounded-none">
+      <TabsList className="w-full shadow-inner rounded-none h-[50px]">
         <TabsTrigger value="add">
           <LucidePlus size={18} />
         </TabsTrigger>

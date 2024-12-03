@@ -13,6 +13,7 @@ interface TextBlockProps {
   contentObject: ObjectContent;
   contentKey: string;
   defaultFont: string;
+  freeDrag: boolean;
   mutate: (newObject: ObjectInstance) => void;
 }
 
@@ -22,6 +23,7 @@ const TextBlock: React.FC<TextBlockProps> = ({
   contentObject,
   defaultFont,
   contentKey,
+  freeDrag,
   mutate,
 }) => {
   return (
@@ -29,7 +31,9 @@ const TextBlock: React.FC<TextBlockProps> = ({
       <Button
         variant={"ghost"}
         size={"iconSm"}
-        className=" absolute top-2 right-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        className={cn(
+          " absolute top-2 right-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        )}
         onClick={() => {
           // addMessage({
           //   id: messages.length,
@@ -65,6 +69,7 @@ const TextBlock: React.FC<TextBlockProps> = ({
           });
           mutate(newObject);
         }}
+        freeDrag={freeDrag}
         content={contentObject.content}
         defaultFont={defaultFont}
       />
@@ -76,4 +81,4 @@ const TextBlock: React.FC<TextBlockProps> = ({
   );
 };
 
-export default TextBlock;
+export default React.memo(TextBlock);

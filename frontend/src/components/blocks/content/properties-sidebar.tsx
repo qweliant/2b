@@ -127,8 +127,10 @@ const PropertiesSidebar = memo(
               <div key={key}>
                 <Label>{objectType.properties[key].name}</Label>
                 <ObjectSelect
+                  key={key}
                   objectTypeID={objectType.properties[key].type}
                   onValueChange={(value) => {
+                    if (!value || value === "" || value === property.referencedObjectId) return;
                     const draft = { ...object };
                     const newObject = produce(draft, (draft) => {
                       draft.properties[key].referencedObjectId = value;
@@ -147,7 +149,7 @@ const PropertiesSidebar = memo(
           //     </p>
           //   )
         )}
-        <Button>Add Property</Button>
+        {/* <Button>Add Property</Button> */}
       </div>
     );
   }

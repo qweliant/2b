@@ -7,6 +7,8 @@ export function CreateObjectType(arg1:string):Promise<void>;
 
 export function DeleteObjectFile(arg1:string):Promise<void>;
 
+export function DeleteObjectType(arg1:string):Promise<void>;
+
 export function GetAllObjectTypeFiles():Promise<Array<string>>;
 
 export function GetAllObjects():Promise<Array<string>>;

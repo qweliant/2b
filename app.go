@@ -159,6 +159,15 @@ func (a *App) CreateObjectType(objectTypeString string) error {
 	return nil
 }
 
+func (a *App) DeleteObjectType(objectTypeID string) error {
+	err := a.handlers.ObjectTypeHandler.DeleteObjectType(objectTypeID, a.logger)
+	if err != nil {
+		a.logger.Error("Error deleting object type", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
 func (a *App) WriteObjectTypeFile(objectTypeID string, objectType string) error {
 	err := objectsAPI.WriteObjectTypeFile(objectTypeID, objectType, a.logger)
 	if err != nil {

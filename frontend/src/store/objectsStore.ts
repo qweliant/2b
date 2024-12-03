@@ -36,7 +36,7 @@ const PropertyValueSchema = z.object({
   valueBoolean: z.boolean().optional(),
   valueNumber: z.number().optional(),
   valueDate: z.string().optional(),
-  referencedObjectId: z.string().uuid().optional(),
+  referencedObjectId: z.string().optional(),
 });
 
 const PropertyValueMapSchema = z.record(PropertyValueSchema);
