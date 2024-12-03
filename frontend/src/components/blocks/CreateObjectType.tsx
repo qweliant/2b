@@ -65,7 +65,7 @@ const ColorPicker = ({
   ];
 
   return (
-    <div className="flex space-x-2 mt-2">
+    <div className="flex space-x-2 py-1 mt-2">
       {colors.map((bgColor) => (
         <button
           key={bgColor}
@@ -177,7 +177,7 @@ export default function CreateObjectType(props: { tabID: string }) {
             <CardTitle>Create Object Type</CardTitle>
             <div className="space-y-4 mt-2">
               <div className="grid grid-cols-2 gap-4">
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="icon"
                   render={({ field }) => (
@@ -187,7 +187,7 @@ export default function CreateObjectType(props: { tabID: string }) {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -199,9 +199,7 @@ export default function CreateObjectType(props: { tabID: string }) {
                     </FormItem>
                   )}
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
+                 <FormField
                   control={form.control}
                   name="color"
                   render={({ field }) => (

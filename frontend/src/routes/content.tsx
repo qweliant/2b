@@ -21,6 +21,7 @@ import { LucidePanelLeftOpen, LucidePin, LucideX } from "lucide-react";
 import ObjectContent from "../components/blocks/content/object-content";
 import { useQueries } from "@tanstack/react-query";
 import { ObjectInstance } from "../store/objectsStore";
+import { cn } from "../lib/utils";
 // import ToDoList from "../components/blocks/content/todolist/todolist";
 const Content = () => {
   const { tabsState, setActiveTab, removeTab } = useTabsState();
@@ -48,14 +49,20 @@ const Content = () => {
       }}
     >
       <Tabs className="h-full" value={activeTab ?? ""}>
-        <TabsList className="h-[4%] px-4">
-          {!isSidebarOpen ? (
-            <TabsTrigger value="sidebar" onClick={() => setSidebarOpen(true)}>
-              <LucidePanelLeftOpen size={18} />
-            </TabsTrigger>
-          ) : (
-            <div />
-          )}
+        <TabsList className={"h-[4%] px-4 draggable w-full justify-start"}>
+          <TabsTrigger
+            value="sidebar"
+            onClick={() => setSidebarOpen(true)}
+            className={cn(
+              "transition-all duration-100 ease-in-out",
+              !isSidebarOpen
+                ? "ml-12 opacity-100"
+                : "ml-0 hidden pointer-events-none opacity-0"
+            )}
+          >
+            <LucidePanelLeftOpen size={18} />
+          </TabsTrigger>
+
           {tabsState.tabs.map((tab) => (
             <TabsTrigger
               key={tab.id}
@@ -89,7 +96,7 @@ const Content = () => {
                   removeTab(tab.id);
                 }}
                 variant={"invisible"}
-                className="hover:text-muted-foreground h-6 w-6 p-0"
+                className="hover:text-muted-foreground h-6 w-6 p-0 hover:shadow-inner"
               >
                 <LucideX size={12} />
               </Button>
@@ -97,7 +104,7 @@ const Content = () => {
           ))}
         </TabsList>
         {tabsState.tabs.map((tab) => (
-          <TabsContent key={tab.id} value={tab.id} className="h-[94%]  px-4">
+          <TabsContent key={tab.id} value={tab.id} className="h-[98%]  px-4">
             {tab.type === "createObjectType" && (
               <CreateObjectType key={tab.id} tabID={tab.id} />
             )}

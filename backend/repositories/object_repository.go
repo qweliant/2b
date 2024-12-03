@@ -83,7 +83,7 @@ func (r *ObjectRepository) GetObject(objectID string) (models.Object, error) {
 
 	properties := map[string]models.Property{}
 	rows, err := tx.Query(
-		"SELECT property_type_id, value, value_number, value_boolean, value_date, object_id FROM property WHERE object_id = ?",
+		"SELECT property_type_id, value, value_number, value_boolean, value_date, object_id, referenced_object_id FROM property WHERE object_id = ?",
 		objectID,
 	)
 	if err != nil {
@@ -100,6 +100,7 @@ func (r *ObjectRepository) GetObject(objectID string) (models.Object, error) {
 			&property.ValueBoolean,
 			&property.ValueDate,
 			&property.ObjectID,
+			&property.ReferencedObjectID,
 		)
 		if err != nil {
 			return models.Object{}, err

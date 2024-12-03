@@ -14,6 +14,10 @@ export function DeleteObjectFile(arg1) {
   return window['go']['main']['App']['DeleteObjectFile'](arg1);
 }
 
+export function DeleteObjectType(arg1) {
+  return window['go']['main']['App']['DeleteObjectType'](arg1);
+}
+
 export function GetAllObjectTypeFiles() {
   return window['go']['main']['App']['GetAllObjectTypeFiles']();
 }

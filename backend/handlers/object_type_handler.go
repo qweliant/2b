@@ -84,6 +84,15 @@ func (o *ObjectTypeHandler) UpdateObjectType(objectType *models.ObjectType, logg
 	return nil
 }
 
+func (o *ObjectTypeHandler) DeleteObjectType(objectTypeID string, logger *zap.Logger) error {
+	err := o.objectTypeRepository.DeleteObjectType(objectTypeID)
+	if err != nil {
+		logger.Error("Error deleting object type", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
 // DEPRECATED
 func ReadObjectTypeFile(objectTypeID string, logger *zap.Logger) (string, error) {
 	path, err := getObjectTypeFilePath(objectTypeID)
