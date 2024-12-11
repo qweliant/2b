@@ -27,7 +27,15 @@ function useMutableQuery<T>({
   });
 
   const { mutate, isPending, isError, isSuccess } = useMutation({
-    mutationFn: mutateFn,
+    mutationFn: (newState: T) => {
+      if (!data) {
+        return Promise.resolve();
+      }
+      if (JSON.stringify(data) !== JSON.stringify(newState)) {
+        return mutateFn(newState);
+      }
+      return Promise.resolve();
+    },
     mutationKey: ["mutate", queryKey],
     onMutate: async (newState: T) => {
       await queryClient.cancelQueries({

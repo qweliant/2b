@@ -15,8 +15,8 @@ func NewObjectTypeRepository(db *sql.DB) *ObjectTypeRepository {
 
 func (repo *ObjectTypeRepository) CreateObjectType(objectType *models.ObjectType) error {
 	_, err := repo.db.Exec(
-		"INSERT INTO object_type (id, name, description, color, icon, fixed, base_object_type) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-		objectType.ID, objectType.Name, objectType.Description, objectType.Color, objectType.Icon, objectType.Fixed, objectType.BaseObjectType,
+		"INSERT INTO object_type (id, name, description, color, fixed, base_object_type) VALUES ($1, $2, $3, $4, $5, $6)",
+		objectType.ID, objectType.Name, objectType.Description, objectType.Color, objectType.Fixed, objectType.BaseObjectType,
 	)
 	return err
 }
@@ -24,9 +24,9 @@ func (repo *ObjectTypeRepository) CreateObjectType(objectType *models.ObjectType
 func (repo *ObjectTypeRepository) GetObjectType(objectTypeID string) (*models.ObjectType, error) {
 	objectType := &models.ObjectType{}
 	err := repo.db.QueryRow(
-		"SELECT id, name, description, color, icon, fixed, base_object_type FROM object_type WHERE id = $1",
+		"SELECT id, name, description, color, fixed, base_object_type FROM object_type WHERE id = $1",
 		objectTypeID,
-	).Scan(&objectType.ID, &objectType.Name, &objectType.Description, &objectType.Color, &objectType.Icon, &objectType.Fixed, &objectType.BaseObjectType)
+	).Scan(&objectType.ID, &objectType.Name, &objectType.Description, &objectType.Color, &objectType.Fixed, &objectType.BaseObjectType)
 	return objectType, err
 }
 
@@ -57,8 +57,8 @@ func (repo *ObjectTypeRepository) GetObjectTypesIDs(filter string) ([]string, er
 
 func (repo *ObjectTypeRepository) UpdateObjectType(objectType *models.ObjectType) error {
 	_, err := repo.db.Exec(
-		"UPDATE object_type SET name = $1, description = $2, color = $3, icon = $4, fixed = $5, base_object_type = $6 WHERE id = $7",
-		objectType.Name, objectType.Description, objectType.Color, objectType.Icon, objectType.Fixed, objectType.BaseObjectType, objectType.ID,
+		"UPDATE object_type SET name = $1, description = $2, color = $3, fixed = $4, base_object_type = $5 WHERE id = $6",
+		objectType.Name, objectType.Description, objectType.Color, objectType.Fixed, objectType.BaseObjectType, objectType.ID,
 	)
 	return err
 }

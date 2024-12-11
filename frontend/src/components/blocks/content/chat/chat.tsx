@@ -28,15 +28,15 @@ const chat = () => {
       <div className="h-[90%]">
         <div>
           <div className="flex justify-between">
-            <p className="text-xl font-bold">Chat</p>
+            <p className="text-xl font-semibold">Ask Lekha</p>
             <Button size={"iconSm"} variant={"outline"}>
               <LucideSettings2 size={14} />
             </Button>
           </div>
-          <p className="text-muted-foreground text-sm">Using LM Studio...</p>
+          <p className="text-muted-foreground text-sm">Using LM Studio - Llama 3.3</p>
         </div>
         <Separator />
-        <div className="h-full overflow-x-clip overflow-y-scroll ">
+        <div className="h-full overflow-x-clip overflow-y-scroll">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -88,7 +88,7 @@ const chat = () => {
           ))}
         </div>
       </div>
-      <div className="flex gap-2 h-fit">
+      <div className="flex gap-2 h-fit w-full">
         <Input
           placeholder="Type a message..."
           value={inputValue}
@@ -103,6 +103,7 @@ const chat = () => {
               setInputValue("");
             }
           }}
+          className="w-full"
           onChange={(e) => setInputValue(e.target.value)}
         />
         <Button

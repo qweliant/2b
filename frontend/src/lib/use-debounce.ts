@@ -5,7 +5,10 @@ const useDebounce = (value: string, delay: number = 500): string => {
   const timerRef: MutableRefObject<NodeJS.Timeout | undefined> = useRef();
 
   useEffect(() => {
-    timerRef.current = setTimeout(() => setDebouncedValue(value), delay);
+    timerRef.current = setTimeout(() => {
+      setDebouncedValue(value);
+      console.log("Debounced value: ", value);
+    });
 
     return () => {
       if (timerRef.current) {

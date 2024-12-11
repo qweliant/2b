@@ -79,7 +79,8 @@ const removeTab = (
       (tab) => tab.id !== tabId
     );
     if (draft.tabsState.activeTab === tabId) {
-      draft.tabsState.activeTab = draft.tabsState.tabs[0]?.id ?? null;
+      draft.tabsState.activeTab =
+        draft.tabsState.tabs[draft.tabsState.tabs.length - 1]?.id ?? null;
     }
   });
   mutate(newState);

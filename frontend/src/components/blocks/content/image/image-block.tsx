@@ -1,15 +1,29 @@
-import { GripVertical } from "lucide-react";
+import { GripVertical, LucideSettings2 } from "lucide-react";
 import React from "react";
-import { Button } from "../../../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTrigger,
-} from "../../../ui/dialog";
-import { Input } from "../../../ui/input";
-import { ObjectInstance, ObjectContent } from "../../../../store/objectsStore";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ObjectInstance, ObjectContent } from "@/store/objectsStore";
 import { produce } from "immer";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { Separator } from "../../../ui/separator";
 
 interface ImageBlockProps {
   object: ObjectInstance;
@@ -24,6 +38,9 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
   contentKey,
   mutate,
 }) => {
+  const [selectedImageFitting, setSelectedImageFitting] = React.useState<
+    "Fit" | "Fill" | "Stretch"
+  >("Fit");
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -51,12 +68,52 @@ const ImageBlock: React.FC<ImageBlockProps> = ({
       <img
         src={contentObject?.content || "https://placehold.co/600x400"}
         alt="placeholder"
-        className="w-full h-full object-cover"
+        className={cn(
+          "w-full h-full",
+          selectedImageFitting === "Fit" && "object-contain",
+          selectedImageFitting === "Fill" && "object-cover",
+          selectedImageFitting === "Stretch" && "object-fill"
+        )}
       />
       <GripVertical
         className="drag-handle left-0 top-[50%] absolute cursor-move text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
         size={20}
       />
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            size="iconSm"
+          >
+            <LucideSettings2 size={16} />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="flex gap-2 flex-col">
+          <p>Select Image Style</p>
+          <Select
+            value={selectedImageFitting}
+            onValueChange={(value) => {
+              setSelectedImageFitting(value as "Fit" | "Fill" | "Stretch");
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Change Image" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Fit">Fit</SelectItem>
+              <SelectItem value="Fill">Fill</SelectItem>
+              <SelectItem value="Stretch">Stretch</SelectItem>
+            </SelectContent>
+          </Select>
+          <Separator />
+          <p>Actions</p>
+          <Button>Change</Button>
+          <Button className="w-full" variant={"destructive"}>
+            Delete
+          </Button>
+        </PopoverContent>
+      </Popover>
       <Dialog>
         <DialogTrigger asChild>
           <Button

@@ -25,6 +25,7 @@ type App struct {
 
 // NewApp creates a new App application struct
 func NewApp() *App {
+	go RunAIPythonBin()
 	logger := zap.Must(zap.NewDevelopment())
 	logger.Info("Creating App Struct")
 	database, err := db.InitDB(logger)
@@ -89,6 +90,7 @@ func (a *App) GetObject(objectID string) (string, error) {
 }
 
 func (a *App) UpdateObject(objectJSON string) error {
+	a.logger.Info("Updating object")
 	object := &models.Object{}
 	err := json.Unmarshal([]byte(objectJSON), object)
 	if err != nil {

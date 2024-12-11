@@ -54,14 +54,14 @@ const ColorPicker = ({
   onChange: (color: string) => void;
 }) => {
   const colors = [
-    "bg-red-500",
-    "bg-yellow-500",
-    "bg-green-500",
-    "bg-blue-500",
-    "bg-indigo-500",
-    "bg-purple-500",
-    "bg-pink-500",
-    "bg-gray-500",
+    "red-500",
+    "yellow-500",
+    "green-500",
+    "blue-500",
+    "indigo-500",
+    "purple-500",
+    "pink-500",
+    "gray-500",
   ];
 
   return (
@@ -69,7 +69,7 @@ const ColorPicker = ({
       {colors.map((bgColor) => (
         <button
           key={bgColor}
-          className={`w-6 h-6 rounded-full ${bgColor} transition-all duration-200 ease-in-out ${
+          className={`w-6 h-6 rounded-full bg-${bgColor} transition-all duration-200 ease-in-out ${
             color === bgColor ? "ring-2 ring-offset-2 ring-gray-400" : ""
           }`}
           onClick={(e) => {
@@ -87,7 +87,6 @@ export default function CreateObjectType(props: { tabID: string }) {
     resolver: zodResolver(CreateObjectSchema),
     defaultValues: {
       name: "",
-      icon: "",
       baseType: "page",
       description: "",
       color: "",

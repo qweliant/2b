@@ -45,7 +45,6 @@ const ObjectInstanceSchema = z.strictObject({
   id: z.string().uuid(),
   type: z.string(),
   title: z.string(),
-  pinned: z.boolean().default(false),
   description: z.string().optional(),
   contents: z.record(ContentTypeSchema).optional(),
   properties: PropertyValueMapSchema,
@@ -55,7 +54,7 @@ const ObjectInstanceSchema = z.strictObject({
     backgroundImage: z.string().default(""),
     defaultFont: z.string().default("ui-sans-serif"),
     freeDrag: z.boolean().default(false),
-  }),
+  })
 });
 
 type ObjectInstance = z.infer<typeof ObjectInstanceSchema>;
@@ -64,7 +63,6 @@ const DEFAULT_OBJECT: ObjectInstance = {
   id: "",
   type: "",
   title: "Untitled",
-  pinned: false,
   description: "",
   contents: {},
   properties: {},
@@ -153,6 +151,9 @@ function useObject(id: string) {
       return JSON.parse(await GetObject(id));
     },
     editFn: (old: ObjectInstance, newState: ObjectInstance) => {
+      if (JSON.stringify(old) === JSON.stringify(newState)) {
+        return old;
+      }
       return { ...old, ...newState };
     },
     mutateFn: (newState: ObjectInstance) => {

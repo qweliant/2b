@@ -10,15 +10,16 @@ import {
   Code,
   ImageIcon,
   Italic,
-  LayoutTemplate,
   List,
   ListOrdered,
+  LucideBookmarkPlus,
+  LucideFilePlus,
   LucideGripVertical,
+  LucideImagePlus,
   LucideInfo,
   LucideLetterText,
   LucidePaintbrush,
   LucidePlus,
-  LucideText,
   Play,
   Underline,
 } from "lucide-react";
@@ -139,14 +140,21 @@ const OptionsSidebar = ({
               unselectable="on"
               className={cn(
                 "flex justify-between items-center w-full border rounded-md p-2 cursor-move",
-                (type !== "text" && type !== 'image')&& "pointer-events-none opacity-30"
+                type !== "text" &&
+                  type !== "image" &&
+                  type !== "drawing" &&
+                  "pointer-events-none opacity-30"
               )}
               onDragStart={(e) => {
                 e.dataTransfer.setData("text/plain", type);
               }}
             >
               <div className="flex gap-4 items-center">
-                <LucideText size={18} />
+                {type === "text" && <LucideLetterText size={18} />}
+                {type === "image" && <LucideImagePlus size={18} />}
+                {type === "drawing" && <LucidePaintbrush size={18} />}
+                {type === "file" && <LucideFilePlus size={18} />}
+                {type === "bookmark" && <LucideBookmarkPlus size={18} />}
                 <p>{type.charAt(0).toLocaleUpperCase() + type.slice(1)}</p>
               </div>
               <LucideGripVertical size={18} />

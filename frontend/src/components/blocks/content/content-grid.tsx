@@ -13,6 +13,7 @@ import { GetSummary } from "../../../../wailsjs/go/main/App";
 import { useMessageStore } from "../../../store/chatStore";
 import TextBlock from "./text/text-block";
 import ImageBlock from "./image/image-block";
+import DrawingBlock from "./draw/drawing-block";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -31,8 +32,6 @@ const ContentGrid = ({
   mutate: (newObject: ObjectInstance) => void;
   editorRef: React.MutableRefObject<ReactFrameworkOutput<Extensions> | null>;
 }) => {
-  const { addMessage, messages } = useMessageStore();
-
   return (
     <ResponsiveGridLayout
       className="layout overflow-x-clip"
@@ -123,8 +122,15 @@ const ContentGrid = ({
                 />
               </div>
             );
+          } else if (contentObj.type === "drawing") {
+            return (
+              <div key={key}>
+                <DrawingBlock />
+              </div>
+            );
+          } else {
+            return null;
           }
-          return null;
         })}
     </ResponsiveGridLayout>
   );

@@ -4,10 +4,10 @@ CREATE TABLE
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     color TEXT NOT NULL,
-    icon TEXT NOT NULL,
     fixed BOOLEAN NOT NULL,
     base_object_type TEXT NOT NULL, -- This could be an ENUM or TEXT field
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 
 CREATE TABLE
@@ -28,13 +28,11 @@ CREATE TABLE
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
-    color TEXT,
-    icon TEXT,
     page_customization TEXT,
     contents TEXT,
-    fixed BOOLEAN NOT NULL DEFAULT FALSE,
     object_type_id TEXT REFERENCES object_type (id) ON DELETE CASCADE, -- Foreign key to object_type
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 
 CREATE TABLE
@@ -48,3 +46,50 @@ CREATE TABLE
     value_date DATETIME,
     referenced_object_id TEXT REFERENCES object (id) ON DELETE SET NULL -- Optional: references another object if this property is an object reference
   );
+
+CREATE TABLE
+  IF NOT EXISTS collection (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    object_type_id TEXT REFERENCES object_type (id) ON DELETE CASCADE, -- Foreign key to object_type
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    query TEXT,
+    all_objects BOOLEAN DEFAULT FALSE,
+    exclude_properties TEXT
+  );
+
+CREATE TRIGGER IF NOT EXISTS create_collection_after_object_type_insert
+AFTER INSERT ON object_type
+FOR EACH ROW
+BEGIN
+  INSERT INTO collection (id, name, description, object_type_id, query, all_objects)
+  VALUES (
+    NEW.id,
+    'All ' || NEW.name,
+    'Collection for all ' || NEW.name,
+    NEW.id,
+    'SELECT id FROM object WHERE object_type_id = ''' || NEW.id || '''',
+    TRUE
+  );
+END;
+
+CREATE TABLE IF NOT EXISTS conversation (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS message (
+  id TEXT PRIMARY KEY,
+  conversation_id TEXT REFERENCES conversation (id) ON DELETE CASCADE,
+  role TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  object_id TEXT REFERENCES object (id) ON DELETE CASCADE,
+  temperature REAL NOT NULL,
+  model_used TEXT NOT NULL,
+  citations TEXT
+);

@@ -18,7 +18,7 @@ interface TextBlockProps {
 }
 
 const TextBlock: React.FC<TextBlockProps> = ({
-  editorRef,
+  // editorRef,
   object,
   contentObject,
   defaultFont,
@@ -61,7 +61,6 @@ const TextBlock: React.FC<TextBlockProps> = ({
         <LucideSparkles className="text-muted-foreground" size={18} />
       </Button>
       <TextEditor
-        ref={editorRef}
         mutate={(newState) => {
           const newObject = produce(object, (draft) => {
             if (!draft.contents) draft.contents = {};

@@ -54,15 +54,12 @@ func (r *ObjectRepository) GetObject(objectID string) (models.Object, error) {
 	var object models.Object
 	var pageCustomizationJSON, contentsJSON string
 	err = tx.QueryRow(
-		"SELECT id, name, description, color, icon, fixed, object_type_id, page_customization, contents FROM object WHERE id = ?",
+		"SELECT id, name, description, object_type_id, page_customization, contents FROM object WHERE id = ?",
 		objectID,
 	).Scan(
 		&object.ID,
 		&object.Name,
 		&object.Description,
-		&object.Color,
-		&object.Icon,
-		&object.Fixed,
 		&object.ObjectTypeID,
 		&pageCustomizationJSON,
 		&contentsJSON,
@@ -135,8 +132,8 @@ func (r *ObjectRepository) CreateObject(object *models.Object, propertyTypes *[]
 	}
 
 	_, err = tx.Exec(
-		"INSERT INTO object (id, name, description, color, icon, fixed, object_type_id, page_customization, contents) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		object.ID, object.Name, object.Description, object.Color, object.Icon, object.Fixed, object.ObjectTypeID, string(pageCustomizationJSON), string(contentJSON),
+		"INSERT INTO object (id, name, description, object_type_id, page_customization, contents) VALUES (?, ?, ?, ?, ?, ?)",
+		object.ID, object.Name, object.Description, object.ObjectTypeID, string(pageCustomizationJSON), string(contentJSON),
 	)
 	if err != nil {
 		tx.Rollback()
@@ -228,8 +225,8 @@ func (r *ObjectRepository) UpdateObject(object *models.Object, propertyTypes *[]
 	}
 
 	_, err = tx.Exec(
-		"UPDATE object SET name = ?, description = ?, color = ?, icon = ?, fixed = ?, object_type_id = ?, page_customization = ?, contents = ? WHERE id = ?",
-		object.Name, object.Description, object.Color, object.Icon, object.Fixed, object.ObjectTypeID, string(pageCustomizationJSON), string(contentJSON), object.ID,
+		"UPDATE object SET name = ?, description = ?, object_type_id = ?, page_customization = ?, contents = ? WHERE id = ?",
+		object.Name, object.Description, object.ObjectTypeID, string(pageCustomizationJSON), string(contentJSON), object.ID,
 	)
 	if err != nil {
 		tx.Rollback()

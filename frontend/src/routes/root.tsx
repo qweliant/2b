@@ -54,14 +54,14 @@ const Root = () => {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel className="bg-muted h-full">
-          {/* <Header /> */}
+          <Header />
           <Content />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel
           defaultSize={isBotSidebarOpen ? 20 : 0}
           minSize={15}
-          maxSize={25}
+          maxSize={50}
           collapsible
           onCollapse={() => setBotSidebarOpen(false)}
           onExpand={() => setBotSidebarOpen(true)}

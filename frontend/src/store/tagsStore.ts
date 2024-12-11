@@ -51,7 +51,6 @@ function useCreateTag() {
       id: newId,
       type: "tag",
       contents: {},
-      pinned: false,
       pageCustomization: {
         backgroundColor: "",
         backgroundImage: "",
