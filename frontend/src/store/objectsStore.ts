@@ -175,12 +175,12 @@ function useDeleteObject() {
 }
 
 function useWriteObject() {
-  return async (id: string, markdown: string) => {
+  return async (id: string, markdown: string, title: string) => {
     if (!id) {
       console.error("Object ID is undefined.");
       return;
     }
-    await WriteObjectFile(id, markdown);
+    await WriteObjectFile(id, markdown, title);
   };
 }
 
