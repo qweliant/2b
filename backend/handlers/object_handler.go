@@ -126,11 +126,6 @@ func WriteObjectFile(id string, html string, title string, logger *zap.Logger) e
 		logger.Error("Error getting object file path", zap.Error(err))
 		return err
 	}
-	// converter := md.NewConverter("", true, nil)
-	// markdown, err := converter.ConvertString(html)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	err = os.WriteFile(path, []byte(html), 0644)
 	if err != nil {
