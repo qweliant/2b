@@ -23,13 +23,31 @@ func NewObjectHandler(
 	return &ObjectHandler{objectRepository, propertyTypeRepository}
 }
 
+// sanitizeTitle removes unwanted characters and replaces spaces with underscores.
+func sanitizeTitle(title string) string {
+	// Replace spaces with underscores
+	title = strings.ReplaceAll(title, " ", "_")
+	// Remove all characters that are not letters, digits, underscores, or hyphens
+	sanitized := strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '-' {
+			return r
+		}
+		return -1
+	}, title)
+	return sanitized
+}
+
 // DEPRECATED
-func getObjectFilePath(objectID string) (string, error) {
+
+func getObjectFilePath(title string) (string, error) {
 	// Define the base path for your content directory
 	basePath := "/Users/qwelian/Programs/apps/blog/content/"
 
-	// Combine the base path and object ID with the desired file extension
-	filePath := basePath + objectID + ".json"
+	// Sanitize the title
+	title = sanitizeTitle(title)
+
+	// Combine the base path and title with the desired file extension
+	filePath := basePath + title + ".json"
 
 	// Check if the directory exists
 	if _, err := os.Stat(basePath); os.IsNotExist(err) {
@@ -101,8 +119,8 @@ func ReadObjectFile(objectID string, logger *zap.Logger) (string, error) {
 	return util.ReadJSONFile(path, logger)
 }
 
-func WriteObjectFile(objectID string, markdown string, logger *zap.Logger) error {
-	path, err := getObjectFilePath(objectID)
+func WriteObjectFile(id string, markdown string, title string, logger *zap.Logger) error {
+	path, err := getObjectFilePath(title)
 	if err != nil {
 		logger.Error("Error getting object file path", zap.Error(err))
 		return err

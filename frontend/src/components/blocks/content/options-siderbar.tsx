@@ -187,7 +187,7 @@ const OptionsSidebar = ({
   }, []);
   const obj = tabsState.activeTab
     ? useObject(tabsState.activeTab)
-    : { data: { id: "NONE" } }; // Call it here
+    : { data: { id: "NONE", title: "NONE" } };
   const markdown = objectToMarkdown(obj.data as unknown as ObjectInstance);
 
   return (
@@ -565,7 +565,11 @@ const OptionsSidebar = ({
           onClick={() => {
             if (tabsState.activeTab) {
               console.log("PASSING TO WRITE", tabsState.activeTab, obj);
-              writeObject(tabsState.activeTab, markdown);
+              writeObject(
+                tabsState.activeTab,
+                markdown,
+                obj.data?.title ?? "Title"
+              );
             }
           }}
         >

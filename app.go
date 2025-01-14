@@ -107,8 +107,8 @@ func (a *App) UpdateObject(objectJSON string) error {
 	return nil
 }
 
-func (a *App) WriteObjectFile(objectID string, object string) error {
-	err := objectsAPI.WriteObjectFile(objectID, object, a.logger)
+func (a *App) WriteObjectFile(id string, object string, title string) error {
+	err := objectsAPI.WriteObjectFile(id, object, title, a.logger)
 	if err != nil {
 		a.logger.Error("Error writing object file", zap.Error(err))
 		return err
