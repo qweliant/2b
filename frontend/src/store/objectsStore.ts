@@ -6,6 +6,7 @@ import {
   GetObject,
   UpdateObject,
   GetRecentObjectsofType,
+  WriteObjectFile,
 } from "../../wailsjs/go/main/App";
 import { useQueryWrapper } from "./util";
 import {
@@ -239,6 +240,16 @@ function useDeleteObject() {
   };
 }
 
+function useWriteObject() {
+  return async (id: string, markdown: string) => {
+    if (!id) {
+      console.error("Object ID is undefined.");
+      return;
+    }
+    await WriteObjectFile(id, markdown);
+  };
+}
+
 function useDefaultFont(id: string) {
   const { data, mutate } = useObject(id);
   const setDefaultFont = (font: string) => {
@@ -288,5 +299,6 @@ export {
   useRecentObjectIDs,
   useAllObjectsWithSelect,
   useObjectWithSelect,
+  useWriteObject,
   DEFAULT_OBJECT,
 };
