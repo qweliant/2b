@@ -34,7 +34,6 @@ const PropertiesSidebar = memo(
       enabled: !!objectTypeId,
     });
 
-    const [month, setMonth] = useState(undefined);
     if (!object || !objectType || !object.properties) {
       return <div>Loading...</div>;
     }
