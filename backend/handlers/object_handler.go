@@ -5,7 +5,6 @@ import (
 	"app/backend/repositories"
 	"app/backend/util"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
