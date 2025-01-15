@@ -147,6 +147,13 @@ const OptionsSidebar = ({
   const deleteObject = useDeleteObject();
   const writeObject = useWriteObject();
 
+  const obj = tabsState.activeTab
+    ? useObject(tabsState.activeTab)
+    : { data: { id: "NONE", title: "NONE" } };
+  const markdown = obj
+    ? objectToMarkdown(obj.data as unknown as ObjectInstance)
+    : "";
+
   useEffect(() => {
     if (editorRef.current) {
       const editorContext = editorRef.current;
@@ -184,10 +191,6 @@ const OptionsSidebar = ({
       return () => unsubscribe();
     }
   }, []);
-  const obj = tabsState.activeTab
-    ? useObject(tabsState.activeTab)
-    : { data: { id: "NONE", title: "NONE" } };
-  const markdown = objectToMarkdown(obj.data as unknown as ObjectInstance);
 
   return (
     <Tabs defaultValue="add">
