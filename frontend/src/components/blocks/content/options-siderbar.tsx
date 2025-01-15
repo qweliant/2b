@@ -35,7 +35,7 @@ import { Separator } from "@radix-ui/react-select";
 import { Switch } from "../../ui/switch";
 import { ReactFrameworkOutput } from "@remirror/react";
 import { Extensions } from "./text/text-editor";
-import { RefObject, useEffect, useState } from "react";
+import { RefObject, useEffect, useMemo, useState } from "react";
 import { cn } from "../../../lib/utils";
 import { ColorPicker } from "../../ui/color-picker";
 import { useTabsState } from "../../../store/miscStore";
@@ -148,11 +148,14 @@ const OptionsSidebar = ({
   const deleteObject = useDeleteObject();
   const writeObject = useWriteObject();
 
-  const obj = tabsState.activeTab
-    ? useObject(tabsState.activeTab)
-    : { data: { id: "NONE", title: "NONE" } };
-  const markdown = obj
-    ? objectToMarkdown(obj.data as unknown as ObjectInstance)
+  const obj = useObject(tabsState.activeTab || "NONE");
+
+  const memoizedObj = useMemo(() => {
+    return obj || { data: { id: "NONE", title: "NONE" } };
+  }, [obj]);
+
+  const markdown = memoizedObj
+    ? objectToMarkdown(memoizedObj.data as unknown as ObjectInstance)
     : "";
 
   useEffect(() => {
