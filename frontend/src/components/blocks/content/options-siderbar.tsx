@@ -48,76 +48,72 @@ import {
   DialogTrigger,
 } from "../../ui/dialog";
 import { prosemirrorNodeToHtml } from "remirror";
-import rehypeParse from "rehype-parse";
-import rehypeRemark from "rehype-remark";
-import remarkStringify from "remark-stringify";
-import { unified } from "unified";
 
-const objectToMarkdown = (object: ObjectInstance): string => {
-  // Generate YAML frontmatter
-  const frontmatter = `---
-title: "${object.title}"
-date: "${new Date().toISOString()}"${
-    object.description ? `\ndescription: "${object.description}"` : ""
-  }
----
-`;
-  // Start with frontmatter
-  let markdown = frontmatter;
+// const objectToMarkdown = (object: ObjectInstance): string => {
+//   // Generate YAML frontmatter
+//   const frontmatter = `---
+// title: "${object.title}"
+// date: "${new Date().toISOString()}"${
+//     object.description ? `\ndescription: "${object.description}"` : ""
+//   }
+// ---
+// `;
+//   // Start with frontmatter
+//   let markdown = frontmatter;
 
-  // Add main content
-  markdown += `# ${object.title}\n\n`;
+//   // Add main content
+//   markdown += `# ${object.title}\n\n`;
 
-  if (object.description) {
-    markdown += `${object.description}\n\n`;
-  }
+//   if (object.description) {
+//     markdown += `${object.description}\n\n`;
+//   }
 
-  if (object.contents && Object.keys(object.contents).length > 0) {
-    markdown += `## Contents\n\n`;
-    for (const [id, content] of Object.entries(object.contents)) {
-      markdown += `### Content ID: ${id}\n\n`;
+//   if (object.contents && Object.keys(object.contents).length > 0) {
+//     markdown += `## Contents\n\n`;
+//     for (const [id, content] of Object.entries(object.contents)) {
+//       markdown += `### Content ID: ${id}\n\n`;
 
-      switch (content.type) {
-        case "text":
-          markdown += `${content.content}\n\n`;
-          break;
-        case "image":
-          markdown += `![Image](file://${content.content})\n\n`;
-          break;
-        case "file":
-          markdown += `[File Link](file://${content.content})\n\n`;
-          break;
-        case "drawing":
-          markdown += `![Drawing](file://${content.content})\n\n`;
-          break;
-        case "bookmark":
-          markdown += `[Bookmark](${content.content})\n\n`;
-          break;
-        default:
-          markdown += `Unsupported content type: ${content.type}\n\n`;
-          break;
-      }
-    }
-  }
+//       switch (content.type) {
+//         case "text":
+//           markdown += `${content.content}\n\n`;
+//           break;
+//         case "image":
+//           markdown += `![Image](file://${content.content})\n\n`;
+//           break;
+//         case "file":
+//           markdown += `[File Link](file://${content.content})\n\n`;
+//           break;
+//         case "drawing":
+//           markdown += `![Drawing](file://${content.content})\n\n`;
+//           break;
+//         case "bookmark":
+//           markdown += `[Bookmark](${content.content})\n\n`;
+//           break;
+//         default:
+//           markdown += `Unsupported content type: ${content.type}\n\n`;
+//           break;
+//       }
+//     }
+//   }
 
-  if (object.properties && Object.keys(object.properties).length > 0) {
-    markdown += `## Properties\n\n`;
-    for (const [id, property] of Object.entries(object.properties)) {
-      markdown += `- **Property ID**: ${id}\n`;
-      if (property.value) markdown += `  - Value: ${property.value}\n`;
-      if (property.valueBoolean !== undefined)
-        markdown += `  - Boolean Value: ${property.valueBoolean}\n`;
-      if (property.valueNumber !== undefined)
-        markdown += `  - Number Value: ${property.valueNumber}\n`;
-      if (property.valueDate) markdown += `  - Date: ${property.valueDate}\n`;
-      if (property.referencedObjectId)
-        markdown += `  - Referenced Object ID: ${property.referencedObjectId}\n`;
-    }
-  }
+//   if (object.properties && Object.keys(object.properties).length > 0) {
+//     markdown += `## Properties\n\n`;
+//     for (const [id, property] of Object.entries(object.properties)) {
+//       markdown += `- **Property ID**: ${id}\n`;
+//       if (property.value) markdown += `  - Value: ${property.value}\n`;
+//       if (property.valueBoolean !== undefined)
+//         markdown += `  - Boolean Value: ${property.valueBoolean}\n`;
+//       if (property.valueNumber !== undefined)
+//         markdown += `  - Number Value: ${property.valueNumber}\n`;
+//       if (property.valueDate) markdown += `  - Date: ${property.valueDate}\n`;
+//       if (property.referencedObjectId)
+//         markdown += `  - Referenced Object ID: ${property.referencedObjectId}\n`;
+//     }
+//   }
 
-  markdown += `\n---\nExported on ${new Date().toISOString()}`;
-  return markdown;
-};
+//   markdown += `\n---\nExported on ${new Date().toISOString()}`;
+//   return markdown;
+// };
 
 const OptionsSidebar = ({
   editorRef,
