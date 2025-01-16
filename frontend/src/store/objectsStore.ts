@@ -16,6 +16,10 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { produce } from "immer";
+import rehypeParse from "rehype-parse";
+import rehypeRemark from "rehype-remark";
+import remarkStringify from "remark-stringify";
+import { unified } from "unified";
 
 const ContentTypes = z.enum(["text", "image", "file", "drawing", "bookmark"]);
 
@@ -175,12 +179,19 @@ function useDeleteObject() {
 }
 
 function useWriteObject() {
-  return async (id: string, markdown: string, title: string) => {
+  return async (id: string, html: string, title: string) => {
+    // Process HTML to Markdown
+    const markdown = await unified()
+      .use(rehypeParse)
+      .use(rehypeRemark)
+      .use(remarkStringify)
+      .process(html);
+
     if (!id) {
       console.error("Object ID is undefined.");
       return;
     }
-    await WriteObjectFile(id, markdown, title);
+    await WriteObjectFile(id, String(markdown), title);
   };
 }
 
