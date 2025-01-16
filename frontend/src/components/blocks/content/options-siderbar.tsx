@@ -85,7 +85,6 @@ const OptionsSidebar = ({
   const writeObject = useWriteObject();
 
   const obj = useObject(tabsState.activeTab || "NONE");
-  console.log("OBJECTS: ", obj.data, "\n");
   useEffect(() => {
     if (editorRef.current) {
       const editorContext = editorRef.current;
@@ -124,6 +123,14 @@ const OptionsSidebar = ({
     }
   }, []);
 
+  useEffect(() => {
+    if (editorRef.current) {
+      const editorContext = editorRef.current;
+
+      const html = prosemirrorNodeToHtml(editorRef.current?.getState().doc);
+      setHtml(html);
+    }
+  }, []);
   return (
     <Tabs defaultValue="add">
       <TabsList className="w-full shadow-inner rounded-none h-[50px]">
