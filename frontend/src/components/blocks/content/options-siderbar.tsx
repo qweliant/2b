@@ -47,6 +47,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/dialog";
+import { prosemirrorNodeToHtml } from "remirror";
+import rehypeParse from "rehype-parse";
+import rehypeRemark from "rehype-remark";
+import remarkStringify from "remark-stringify";
+import { unified } from "unified";
 
 const objectToMarkdown = (object: ObjectInstance): string => {
   // Generate YAML frontmatter
@@ -144,19 +149,12 @@ const OptionsSidebar = ({
     // alignRight: false,
     // alignJustify: false,
   });
+  const [html, setHtml] = useState<string>("");
   const { tabsState } = useTabsState();
   const deleteObject = useDeleteObject();
   const writeObject = useWriteObject();
 
   const obj = useObject(tabsState.activeTab || "NONE");
-
-  const memoizedObj = useMemo(() => {
-    return obj || { data: { id: "NONE", title: "NONE" } };
-  }, [obj]);
-
-  const markdown = memoizedObj
-    ? objectToMarkdown(memoizedObj.data as unknown as ObjectInstance)
-    : "";
 
   useEffect(() => {
     if (editorRef.current) {
@@ -196,6 +194,14 @@ const OptionsSidebar = ({
     }
   }, []);
 
+  useEffect(() => {
+    if (editorRef.current) {
+      const editorContext = editorRef.current;
+
+      const html = prosemirrorNodeToHtml(editorRef.current?.getState().doc);
+      setHtml(html);
+    }
+  }, []);
   return (
     <Tabs defaultValue="add">
       <TabsList className="w-full shadow-inner rounded-none h-[50px]">
@@ -570,10 +576,9 @@ const OptionsSidebar = ({
           variant="default"
           onClick={() => {
             if (tabsState.activeTab) {
-              console.log("PASSING TO WRITE", tabsState.activeTab, obj);
               writeObject(
                 tabsState.activeTab,
-                markdown,
+                html,
                 obj.data?.title ?? "Title"
               );
             }
