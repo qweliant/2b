@@ -196,8 +196,6 @@ const OptionsSidebar = ({
 
   useEffect(() => {
     if (editorRef.current) {
-      const editorContext = editorRef.current;
-
       const html = prosemirrorNodeToHtml(editorRef.current?.getState().doc);
       setHtml(html);
     }
