@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import ObjectSelect from "../../object-select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface PropertiesSidebarProps {
   id: string;
@@ -35,9 +36,11 @@ const PropertiesSidebar = memo(
       enabled: !!objectTypeId,
     });
 
-    if (!object || !objectType) {
+    if (!object || !objectType || !object.properties) {
       return <div>Loading...</div>;
     }
+    console.log("Object:", object);
+    console.log("Object Properties:", object?.properties);
     return (
       <div className="px-2 py-4 flex flex-col gap-2">
         {object.properties &&
