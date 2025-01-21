@@ -64,15 +64,11 @@
     "react-resizable-panels": "^2.1.3",
     "react-router-dom": "^6.26.2",
     "recharts": "^2.12.7",
+    "refractor": "^4.8.1",
     "remirror": "^3.0.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-<<<<<<< HEAD
-    "typescript.js": "link:refractor/lang/typescript.js",
-=======
-    "unified": "^11.0.5",
->>>>>>> fc5d826 (use remirror and rehype to process md)
     "uuid": "^10.0.0",
     "vaul": "^0.9.4",
     "zod": "^3.23.8",
