@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import ObjectSelect from "../../object-select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface PropertiesSidebarProps {
   id: string;
@@ -30,9 +31,11 @@ const PropertiesSidebar = memo(
       enabled: !!objectTypeId,
     });
 
-    if (!object || !objectType) {
+    if (!object || !objectType || !object.properties) {
       return <div>Loading...</div>;
     }
+    console.log("Object:", object);
+    console.log("Object Properties:", object?.properties);
     return (
       <div className="px-2 py-4 flex flex-col gap-2">
         {Object.entries(object.properties).map(
@@ -57,7 +60,7 @@ const PropertiesSidebar = memo(
               return (
                 <div key={key} className="flex flex-col gap-2 py-2">
                   <Label>{objectType.properties[key].name}</Label>
-                  {/* <Checkbox checked={value === "true"} /> */}
+                  <Checkbox checked={true} />
                   <Switch />
                 </div>
               );
@@ -130,7 +133,12 @@ const PropertiesSidebar = memo(
                   key={key}
                   objectTypeID={objectType.properties[key].type}
                   onValueChange={(value) => {
-                    if (!value || value === "" || value === property.referencedObjectId) return;
+                    if (
+                      !value ||
+                      value === "" ||
+                      value === property.referencedObjectId
+                    )
+                      return;
                     const draft = { ...object };
                     const newObject = produce(draft, (draft) => {
                       draft.properties[key].referencedObjectId = value;
