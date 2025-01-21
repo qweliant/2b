@@ -34,7 +34,14 @@ import {
 } from "@remirror/react";
 import "remirror/styles/all.css";
 import "../../../../remirror.css";
-import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import debounce from "lodash/debounce";
 import { EditorState, ExtensionPriority, getThemeVar } from "remirror";
 import "remirror/styles/all.css";
@@ -45,7 +52,7 @@ import { cn } from "../../../../lib/utils";
 import { FloatingToolbar } from "./floating-toolbar";
 import { DecorationsExtension } from "remirror";
 import { motion } from "framer-motion";
-import { TextColorExtension } from 'remirror/extensions';
+import { TextColorExtension } from "remirror/extensions";
 // import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
 import { MarkdownToolbar } from "@remirror/react-ui";
 import typescript from "refractor/lang/typescript.js";
@@ -54,7 +61,6 @@ import { createContextState } from "create-context-state";
 const extensions = () => [
   new PlaceholderExtension({
     placeholder: "Type here...",
-    // emptyNodeClass: "my-custom-placeholder",
   }),
   new BoldExtension({}),
   new ItalicExtension(),
@@ -85,7 +91,8 @@ const extensions = () => [
     supportedLanguages: [typescript],
     defaultLanguage: "markdown",
     syntaxTheme: "base16_ateliersulphurpool_light",
-    defaultWrap: true,}),
+    defaultWrap: true,
+  }),
   new ImageExtension({}),
   new CodeMirrorExtension({
     languages: languages,
