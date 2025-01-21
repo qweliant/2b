@@ -5,9 +5,11 @@ import (
 	"app/backend/repositories"
 	"app/backend/util"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
+	md "github.com/JohannesKaufmann/html-to-markdown"
 	"go.uber.org/zap"
 )
 
@@ -119,7 +121,7 @@ func ReadObjectFile(objectID string, logger *zap.Logger) (string, error) {
 	return util.ReadJSONFile(path, logger)
 }
 
-func WriteObjectFile(id string, markdown string, title string, logger *zap.Logger) error {
+func WriteObjectFile(id string, html string, title string, logger *zap.Logger) error {
 	path, err := getObjectFilePath(title)
 	if err != nil {
 		logger.Error("Error getting object file path", zap.Error(err))
@@ -127,7 +129,11 @@ func WriteObjectFile(id string, markdown string, title string, logger *zap.Logge
 	}
 
 	markdownPath := strings.Replace(path, ".json", ".mdx", 1)
-
+	converter := md.NewConverter("", true, nil)
+	markdown, err := converter.ConvertString(html)
+	if err != nil {
+		log.Fatal(err)
+	}
 	err = os.WriteFile(markdownPath, []byte(markdown), 0644)
 	if err != nil {
 		logger.Error("Error writing markdown file", zap.Error(err))

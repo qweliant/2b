@@ -13,6 +13,9 @@ import {
   FontFamilyExtension,
   PositionerExtension,
   UnderlineExtension,
+  CodeBlockExtension,
+  DocExtension,
+  LinkExtension
 } from "remirror/extensions";
 import {
   ReactExtensions,
@@ -26,8 +29,11 @@ import "remirror/styles/all.css";
 import "../../../../remirror.css";
 import { forwardRef, memo, useCallback, useImperativeHandle } from "react";
 import debounce from "lodash/debounce";
+import { ExtensionPriority, getThemeVar } from "remirror";
+import "remirror/styles/all.css";
+import "../../../../remirror.css";
+import useDebounce from "../../../../lib/use-debounce";
 import { ThemeProvider } from "@remirror/react";
-import { Button } from "../../../ui/button";
 import { cn } from "../../../../lib/utils";
 import { FloatingToolbar } from "./floating-toolbar";
 import { DecorationsExtension } from "remirror";
@@ -36,34 +42,40 @@ import { TextColorExtension } from 'remirror/extensions';
 
 
 // import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
+import { MarkdownEditor } from "@remirror/react-editors/markdown";
+import { MarkdownToolbar } from "@remirror/react-ui";
+import typescript from "refractor/lang/typescript.js";
+import { createContextState } from "create-context-state";
+
 const extensions = () => [
   new PlaceholderExtension({
     placeholder: "Type here...",
-    // emptyNodeClass: "my-custom-placeholder",
   }),
   new BoldExtension({}),
   new ItalicExtension(),
-  // new CalloutExtension({ defaultType: "warn" }), // Override defaultType: 'info'
-  // new LinkExtension({ autoLink: true }),
-
+  new LinkExtension({ autoLink: true }),
+  new MarkdownExtension({ copyAsMarkdown: true }),
+  // new CodeBlockExtension({ supportedLanguages: [] }),
   new StrikeExtension(),
   new ItalicExtension(),
   new HeadingExtension({}),
   new BlockquoteExtension(),
   new BulletListExtension({}),
   new OrderedListExtension(),
-  // new ListItemExtension({
-  //   priority: ExtensionPriority.High,
-  //   enableCollapsible: true,
-  // }),
   new CodeExtension(),
-  new MarkdownExtension({}),
   new HardBreakExtension(),
   new FontFamilyExtension({}),
   new PositionerExtension({}),
   new UnderlineExtension(),
   new DecorationsExtension({}),
   new TextColorExtension({}),
+  new DocExtension({ content: "codeBlock" }),
+  new CodeBlockExtension({
+    supportedLanguages: [typescript],
+    defaultLanguage: "markdown",
+    syntaxTheme: "base16_ateliersulphurpool_light",
+    defaultWrap: true,
+  }),
 ];
 
 export type Extensions = ReactExtensions<
@@ -83,6 +95,8 @@ export type Extensions = ReactExtensions<
   | MarkdownExtension
   | DecorationsExtension
   | TextColorExtension
+  | CodeBlockExtension
+  | LinkExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
