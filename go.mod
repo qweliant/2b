@@ -5,6 +5,7 @@ go 1.22.5
 toolchain go1.22.7
 
 require (
+	github.com/JohannesKaufmann/html-to-markdown v1.6.0
 	github.com/adrg/xdg v0.5.0
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/google/uuid v1.6.0
@@ -15,6 +16,8 @@ require (
 )
 
 require (
+	github.com/PuerkitoBio/goquery v1.9.2 // indirect
+	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/dlclark/regexp2 v1.11.4 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
