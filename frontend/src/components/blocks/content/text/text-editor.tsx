@@ -15,8 +15,11 @@ import {
   UnderlineExtension,
   CodeBlockExtension,
   DocExtension,
-  LinkExtension
+  CalloutExtension,
+  LinkExtension,
+  ListItemExtension,
 } from "remirror/extensions";
+import { MarkdownEditor } from "@remirror/react-editors/markdown";
 import {
   ReactExtensions,
   ReactFrameworkOutput,
@@ -39,10 +42,7 @@ import { FloatingToolbar } from "./floating-toolbar";
 import { DecorationsExtension } from "remirror";
 import { motion } from "framer-motion";
 import { TextColorExtension } from 'remirror/extensions';
-
-
 // import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
-import { MarkdownEditor } from "@remirror/react-editors/markdown";
 import { MarkdownToolbar } from "@remirror/react-ui";
 import typescript from "refractor/lang/typescript.js";
 import { createContextState } from "create-context-state";
@@ -50,12 +50,13 @@ import { createContextState } from "create-context-state";
 const extensions = () => [
   new PlaceholderExtension({
     placeholder: "Type here...",
+    // emptyNodeClass: "my-custom-placeholder",
   }),
   new BoldExtension({}),
   new ItalicExtension(),
+  new CalloutExtension({ defaultType: "warn" }), // Override defaultType: 'info'
   new LinkExtension({ autoLink: true }),
-  new MarkdownExtension({ copyAsMarkdown: true }),
-  // new CodeBlockExtension({ supportedLanguages: [] }),
+
   new StrikeExtension(),
   new ItalicExtension(),
   new HeadingExtension({}),
@@ -63,6 +64,7 @@ const extensions = () => [
   new BulletListExtension({}),
   new OrderedListExtension(),
   new CodeExtension(),
+  new MarkdownExtension({}),
   new HardBreakExtension(),
   new FontFamilyExtension({}),
   new PositionerExtension({}),
@@ -97,6 +99,8 @@ export type Extensions = ReactExtensions<
   | TextColorExtension
   | CodeBlockExtension
   | LinkExtension
+  | ListItemExtension
+  | CalloutExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
