@@ -199,7 +199,7 @@ export default function CreateObjectType(props: { tabID: string }) {
                     </FormItem>
                   )}
                 />
-                 <FormField
+                <FormField
                   control={form.control}
                   name="color"
                   render={({ field }) => (
