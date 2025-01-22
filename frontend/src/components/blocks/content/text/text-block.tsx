@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { ObjectContent, ObjectInstance } from "../../../../store/objectsStore";
 import { ReactFrameworkOutput } from "@remirror/react";
 import TextEditor, { Extensions } from "./text-editor";
@@ -26,6 +26,16 @@ const TextBlock: React.FC<TextBlockProps> = ({
   freeDrag,
   mutate,
 }) => {
+  const mutationHandler = useCallback(
+    (newState: string) => {
+      const newObject = produce(object, (draft) => {
+        if (!draft.contents) draft.contents = {};
+        draft.contents[contentKey].content = newState;
+      });
+      mutate(newObject);
+    },
+    [object, contentKey, mutate]
+  );
   return (
     <>
       <Button
@@ -34,41 +44,13 @@ const TextBlock: React.FC<TextBlockProps> = ({
         className={cn(
           " absolute top-2 right-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity z-10"
         )}
-        onClick={() => {
-          // addMessage({
-          //   id: messages.length,
-          //   role: "user",
-          //   content: `Summarize some content for me: \n${contentObj.content.slice(
-          //     0,
-          //     15
-          //   )}...`,
-          //   timestamp: "Just now",
-          //   reference: {
-          //     title: object.title,
-          //     id: object.id,
-          //   },
-          // });
-          // GetSummary(contentObj.content).then((response) => {
-          //   addMessage({
-          //     id: messages.length,
-          //     role: "ai",
-          //     content: response,
-          //     timestamp: "Just now",
-          //   });
-          // });
-        }}
+        onClick={() => {}}
       >
         <LucideSparkles className="text-muted-foreground" size={18} />
       </Button>
       <TextEditor
         ref={editorRef}
-        mutate={(newState) => {
-          const newObject = produce(object, (draft) => {
-            if (!draft.contents) draft.contents = {};
-            draft.contents[contentKey].content = newState;
-          });
-          mutate(newObject);
-        }}
+        mutate={mutationHandler}
         freeDrag={freeDrag}
         content={contentObject.content}
         defaultFont={defaultFont}
