@@ -61,6 +61,7 @@ import { createContextState } from "create-context-state";
 const extensions = () => [
   new PlaceholderExtension({
     placeholder: "Type here...",
+    // emptyNodeClass: "my-custom-placeholder",
   }),
   new BoldExtension({}),
   new ItalicExtension(),
