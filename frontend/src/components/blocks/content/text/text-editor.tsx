@@ -16,6 +16,8 @@ import {
   CalloutExtension,
   LinkExtension,
   ListItemExtension,
+  CodeBlockExtension,
+  ImageExtension,
 } from "remirror/extensions";
 import { MarkdownEditor } from "@remirror/react-editors/markdown";
 import {
@@ -59,6 +61,7 @@ const extensions = () => [
   new FontFamilyExtension({}),
   new PositionerExtension({}),
   new UnderlineExtension(),
+  new ImageExtension({})
 ];
 
 export type Extensions = ReactExtensions<
@@ -79,6 +82,8 @@ export type Extensions = ReactExtensions<
   | LinkExtension
   | ListItemExtension
   | CalloutExtension
+  | CodeBlockExtension
+  | ImageExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
@@ -120,7 +125,7 @@ const TextEditor = forwardRef<
     setMarkdown(newMarkdown);
     setState(state); // Update the ProseMirror document state
   };
-  
+
   return (
     <div
       className={cn(
@@ -141,8 +146,7 @@ const TextEditor = forwardRef<
               manager={manager}
               onChange={handleEditorChange}
               state={state}
-            >
-            </Remirror>
+            ></Remirror>
           </ThemeProvider>
         </div>
       </div>
