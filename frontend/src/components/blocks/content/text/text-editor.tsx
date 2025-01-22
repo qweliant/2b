@@ -213,8 +213,7 @@ const TextEditor = forwardRef<
               manager={manager}
               onChange={handleEditorChange}
               state={state}
-            >
-            </Remirror>
+            ></Remirror>
           </ThemeProvider>
         </div>
       </div>
