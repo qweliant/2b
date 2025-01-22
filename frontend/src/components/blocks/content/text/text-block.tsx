@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { ObjectContent, ObjectInstance } from "../../../../store/objectsStore";
 import { ReactFrameworkOutput } from "@remirror/react";
 import TextEditor, { Extensions } from "./text-editor";
@@ -37,6 +37,16 @@ const TextBlock: React.FC<TextBlockProps> = ({
   onFocus,
   onBlur,
 }) => {
+  const mutationHandler = useCallback(
+    (newState: string) => {
+      const newObject = produce(object, (draft) => {
+        if (!draft.contents) draft.contents = {};
+        draft.contents[contentKey].content = newState;
+      });
+      mutate(newObject);
+    },
+    [object, contentKey, mutate]
+  );
   return (
     <>
       <DropdownMenu>

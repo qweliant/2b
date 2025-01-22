@@ -30,9 +30,9 @@ import {
 } from "@remirror/react";
 import "remirror/styles/all.css";
 import "../../../../remirror.css";
-import { forwardRef, memo, useCallback, useImperativeHandle } from "react";
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import debounce from "lodash/debounce";
-import { ExtensionPriority, getThemeVar } from "remirror";
+import { EditorState, ExtensionPriority, getThemeVar } from "remirror";
 import "remirror/styles/all.css";
 import "../../../../remirror.css";
 import useDebounce from "../../../../lib/use-debounce";
@@ -154,9 +154,23 @@ const TextEditor = forwardRef<
     }, 300),
     [mutate]
   );
+  const [markdown, setMarkdown] = useState<string>(
+    getContext()?.helpers?.getMarkdown() ?? content
+  );
+  const debouncedMarkdown = useDebounce(markdown, 300);
+  useEffect(() => {
+    mutate(debouncedMarkdown);
+  }, [debouncedMarkdown]);
+
   //@ts-expect-error - This is a hack to get the context
   useImperativeHandle(ref, () => getContext(), [getContext]);
 
+  const handleEditorChange = ({ state }: { state: EditorState }) => {
+    const newMarkdown = getContext()?.helpers?.getMarkdown() ?? "";
+    setMarkdown(newMarkdown);
+    setState(state); // Update the ProseMirror document state
+  };
+  
   return (
     <div
       className={cn(
