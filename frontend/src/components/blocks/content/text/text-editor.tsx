@@ -13,11 +13,12 @@ import {
   FontFamilyExtension,
   PositionerExtension,
   UnderlineExtension,
-  CodeBlockExtension,
   DocExtension,
   CalloutExtension,
   LinkExtension,
   ListItemExtension,
+  CodeBlockExtension,
+  ImageExtension,
 } from "remirror/extensions";
 import { MarkdownEditor } from "@remirror/react-editors/markdown";
 import {
@@ -101,6 +102,8 @@ export type Extensions = ReactExtensions<
   | LinkExtension
   | ListItemExtension
   | CalloutExtension
+  | CodeBlockExtension
+  | ImageExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
@@ -170,7 +173,7 @@ const TextEditor = forwardRef<
     setMarkdown(newMarkdown);
     setState(state); // Update the ProseMirror document state
   };
-  
+
   return (
     <div
       className={cn(
