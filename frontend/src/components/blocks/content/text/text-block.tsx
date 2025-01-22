@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { ObjectContent, ObjectInstance } from "../../../../store/objectsStore";
 import { ReactFrameworkOutput } from "@remirror/react";
 import TextEditor, { Extensions } from "./text-editor";

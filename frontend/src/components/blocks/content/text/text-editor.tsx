@@ -193,7 +193,6 @@ const TextEditor = forwardRef<
     setMarkdown(newMarkdown);
     setState(state); // Update the ProseMirror document state
   };
-
   return (
     <div
       className={cn(
@@ -212,15 +211,9 @@ const TextEditor = forwardRef<
           >
             <Remirror
               manager={manager}
-              onChange={({ helpers, state }) => {
-                const markdown = helpers.getMarkdown(state);
-                debouceFn(markdown);
-                setState(state);
-              }}
+              onChange={handleEditorChange}
               state={state}
             >
-              <EditorComponent onFocus={onFocus} onBlur={onBlur} />
-              <FloatingToolbar />
             </Remirror>
           </ThemeProvider>
         </div>
