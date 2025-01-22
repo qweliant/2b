@@ -22,7 +22,6 @@ import {
   ReactExtensions,
   ReactFrameworkOutput,
   Remirror,
-  useHelpers,
   useRemirror,
 } from "@remirror/react";
 import "remirror/styles/all.css";
@@ -32,8 +31,8 @@ import useDebounce from "../../../../lib/use-debounce";
 import { ThemeProvider } from "@remirror/react";
 import { cn } from "../../../../lib/utils";
 import { marked } from "marked";
-import { ExtensionPriority } from "remirror";
-// import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
+import { EditorState, ExtensionPriority } from "remirror";
+
 const extensions = () => [
   new PlaceholderExtension({
     placeholder: "Type here...",
@@ -105,17 +104,23 @@ const TextEditor = forwardRef<
     content: content,
     stringHandler: "markdown",
   });
-  const [value, setValue] = useState<string>(
+  const [markdown, setMarkdown] = useState<string>(
     getContext()?.helpers?.getMarkdown() ?? content
   );
-  const debouncedValue = useDebounce(value, 300);
+  const debouncedMarkdown = useDebounce(markdown, 300);
   useEffect(() => {
-    mutate(debouncedValue);
-  }, [debouncedValue]);
+    mutate(debouncedMarkdown);
+  }, [debouncedMarkdown]);
 
   //@ts-expect-error - This is a hack to get the context
   useImperativeHandle(ref, () => getContext(), [getContext]);
 
+  const handleEditorChange = ({ state }: { state: EditorState }) => {
+    const newMarkdown = getContext()?.helpers?.getMarkdown() ?? "";
+    setMarkdown(newMarkdown);
+    setState(state); // Update the ProseMirror document state
+  };
+  
   return (
     <div
       className={cn(
@@ -134,23 +139,15 @@ const TextEditor = forwardRef<
           >
             <Remirror
               manager={manager}
-              onChange={({ state }) => {
-                const markdown = getContext()?.helpers?.getMarkdown();
-                setValue(markdown ?? "");
-                setState(state);
-              }}
+              onChange={handleEditorChange}
               state={state}
             >
-              {" "}
-              <MarkdownEditor
-                placeholder="Start typing..."
-                initialContent={debouncedValue}
-              />
             </Remirror>
-
-            <MarkdownPreview markdown={value} />
           </ThemeProvider>
         </div>
+      </div>
+      <div className="bg-white text-green-600">
+        <MarkdownPreview markdown={markdown} />
       </div>
     </div>
   );
