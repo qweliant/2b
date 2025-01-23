@@ -47,72 +47,7 @@ import {
   DialogTrigger,
 } from "../../ui/dialog";
 import { prosemirrorNodeToHtml } from "remirror";
-
-// const objectToMarkdown = (object: ObjectInstance): string => {
-//   // Generate YAML frontmatter
-//   const frontmatter = `---
-// title: "${object.title}"
-// date: "${new Date().toISOString()}"${
-//     object.description ? `\ndescription: "${object.description}"` : ""
-//   }
-// ---
-// `;
-//   // Start with frontmatter
-//   let markdown = frontmatter;
-
-//   // Add main content
-//   markdown += `# ${object.title}\n\n`;
-
-//   if (object.description) {
-//     markdown += `${object.description}\n\n`;
-//   }
-
-//   if (object.contents && Object.keys(object.contents).length > 0) {
-//     markdown += `## Contents\n\n`;
-//     for (const [id, content] of Object.entries(object.contents)) {
-//       markdown += `### Content ID: ${id}\n\n`;
-
-//       switch (content.type) {
-//         case "text":
-//           markdown += `${content.content}\n\n`;
-//           break;
-//         case "image":
-//           markdown += `![Image](file://${content.content})\n\n`;
-//           break;
-//         case "file":
-//           markdown += `[File Link](file://${content.content})\n\n`;
-//           break;
-//         case "drawing":
-//           markdown += `![Drawing](file://${content.content})\n\n`;
-//           break;
-//         case "bookmark":
-//           markdown += `[Bookmark](${content.content})\n\n`;
-//           break;
-//         default:
-//           markdown += `Unsupported content type: ${content.type}\n\n`;
-//           break;
-//       }
-//     }
-//   }
-
-//   if (object.properties && Object.keys(object.properties).length > 0) {
-//     markdown += `## Properties\n\n`;
-//     for (const [id, property] of Object.entries(object.properties)) {
-//       markdown += `- **Property ID**: ${id}\n`;
-//       if (property.value) markdown += `  - Value: ${property.value}\n`;
-//       if (property.valueBoolean !== undefined)
-//         markdown += `  - Boolean Value: ${property.valueBoolean}\n`;
-//       if (property.valueNumber !== undefined)
-//         markdown += `  - Number Value: ${property.valueNumber}\n`;
-//       if (property.valueDate) markdown += `  - Date: ${property.valueDate}\n`;
-//       if (property.referencedObjectId)
-//         markdown += `  - Referenced Object ID: ${property.referencedObjectId}\n`;
-//     }
-//   }
-
-//   markdown += `\n---\nExported on ${new Date().toISOString()}`;
-//   return markdown;
-// };
+import objectToMarkdown from "./utils";
 
 const OptionsSidebar = ({
   editorRef,
@@ -150,7 +85,7 @@ const OptionsSidebar = ({
   const writeObject = useWriteObject();
 
   const obj = useObject(tabsState.activeTab || "NONE");
-
+  console.log("OBJECTS: ", obj.data, "\n");
   useEffect(() => {
     if (editorRef.current) {
       const editorContext = editorRef.current;
@@ -195,6 +130,7 @@ const OptionsSidebar = ({
       setHtml(html);
     }
   }, []);
+
   return (
     <Tabs defaultValue="add">
       <TabsList className="w-full shadow-inner rounded-none h-[50px]">
@@ -495,9 +431,13 @@ const OptionsSidebar = ({
           variant="default"
           onClick={() => {
             if (tabsState.activeTab) {
+              const objMd = objectToMarkdown(
+                obj.data as unknown as ObjectInstance,
+                { escapeSpecialChars: true }
+              );
               writeObject(
                 tabsState.activeTab,
-                html,
+                objMd,
                 obj.data?.title ?? "Title"
               );
             }
