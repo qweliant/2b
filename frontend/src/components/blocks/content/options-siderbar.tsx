@@ -123,12 +123,6 @@ const OptionsSidebar = ({
     }
   }, []);
 
-  useEffect(() => {
-    if (editorRef.current) {
-      const html = prosemirrorNodeToHtml(editorRef.current?.getState().doc);
-      setHtml(html);
-    }
-  }, []);
   return (
     <Tabs defaultValue="add">
       <TabsList className="w-full shadow-inner rounded-none h-[50px]">
