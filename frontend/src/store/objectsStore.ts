@@ -288,6 +288,7 @@ export type { ObjectInstance, ObjectContent };
 export {
   ObjectInstanceSchema,
   ContentTypes,
+  PropertyValueSchema,
   useCreateObject,
   useObject,
   useAllObjects,
