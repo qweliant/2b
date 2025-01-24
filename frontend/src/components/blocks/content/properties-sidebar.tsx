@@ -18,6 +18,7 @@ import {
 import ObjectSelect from "../../object-select";
 import { Checkbox } from "@/components/ui/checkbox";
 
+import { createPortal } from "react-dom";
 interface PropertiesSidebarProps {
   id: string;
 }
@@ -144,26 +145,21 @@ const PropertiesSidebar = memo(
               return (
                 <div key={key}>
                   <Label>{objectType.properties[key].name}</Label>
-                  <ObjectSelect
-                    key={key}
-                    objectTypeID={objectType.properties[key].type}
-                    onValueChange={(value) => {
-                      if (
-                        !value ||
-                        value === "" ||
-                        value === property.referencedObjectId
-                      )
-                        return;
+                  <Calendar
+                    mode="single"
+                    selected={
+                      property?.valueDate
+                        ? new Date(property.valueDate)
+                        : undefined
+                    }
+                    onSelect={(day) => {
+                      if (!day) return; // If no day is selected, exit early.
                       const draft = { ...object };
                       const newObject = produce(draft, (draft) => {
-                        if (!draft.properties) {
-                          draft.properties = {};
-                        }
-                        draft.properties[key].referencedObjectId = value;
+                        draft.properties[key].valueDate = day.toISOString();
                       });
                       mutate(newObject);
                     }}
-                    value={property.referencedObjectId ?? ""}
                   />
                 </div>
               );
