@@ -27,7 +27,7 @@ const objectToMarkdown = (
   const {
     includeExportDate = false,
     indentSize = 3,
-    escapeSpecialChars = false,
+    escapeSpecialChars = true,
   } = options;
 
   const indent = " ".repeat(indentSize);
@@ -58,9 +58,13 @@ const objectToMarkdown = (
 
   // Generate YAML frontmatter
   const generateFrontmatter = (): string => {
+    // Find the first `valueDate` in properties
+    const firstDate = Object.values(object.properties)
+      .map((prop) => prop.valueDate) // Extract the valueDate field
+      .find((date) => date !== undefined); // Find the first defined date
     const frontmatterObj = {
-      title: object.title,
-      date: includeExportDate ? formatDate(new Date()) : undefined,
+      title: object.title.replace(/["`']/g, ""),
+      date: firstDate ? formatDate(firstDate) : formatDate(new Date()),
       type: object.type,
       pinned: object.pinned,
       ...(object.description && { description: escape(object.description) }),
