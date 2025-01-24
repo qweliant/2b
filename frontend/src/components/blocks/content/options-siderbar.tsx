@@ -35,7 +35,7 @@ import { Separator } from "@radix-ui/react-select";
 import { Switch } from "../../ui/switch";
 import { ReactFrameworkOutput } from "@remirror/react";
 import { Extensions } from "./text/text-editor";
-import { RefObject, useEffect, useMemo, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { cn } from "../../../lib/utils";
 import { ColorPicker } from "../../ui/color-picker";
 import { useTabsState } from "../../../store/miscStore";
@@ -507,8 +507,7 @@ const OptionsSidebar = ({
           onClick={() => {
             if (tabsState.activeTab) {
               const objMd = objectToMarkdown(
-                obj.data as unknown as ObjectInstance,
-                { escapeSpecialChars: true }
+                obj.data as unknown as ObjectInstance
               );
               writeObject(
                 tabsState.activeTab,

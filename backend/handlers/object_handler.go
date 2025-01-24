@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 
-	md "github.com/JohannesKaufmann/html-to-markdown"
 	"go.uber.org/zap"
 )
 
@@ -49,7 +48,7 @@ func getObjectFilePath(title string) (string, error) {
 	title = sanitizeTitle(title)
 
 	// Combine the base path and title with the desired file extension
-	filePath := basePath + title + ".json"
+	filePath := basePath + title + ".mdx"
 
 	// Check if the directory exists
 	if _, err := os.Stat(basePath); os.IsNotExist(err) {
@@ -127,21 +126,19 @@ func WriteObjectFile(id string, html string, title string, logger *zap.Logger) e
 		logger.Error("Error getting object file path", zap.Error(err))
 		return err
 	}
-
-	markdownPath := strings.Replace(path, ".json", ".mdx", 1)
-	converter := md.NewConverter("", true, nil)
-	markdown, err := converter.ConvertString(html)
+	// converter := md.NewConverter("", true, nil)
+	// markdown, err := converter.ConvertString(html)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = os.WriteFile(markdownPath, []byte(markdown), 0644)
+
+	err = os.WriteFile(path, []byte(html), 0644)
 	if err != nil {
 		logger.Error("Error writing markdown file", zap.Error(err))
 		return err
 	}
 
-	logger.Info("Exported to", zap.String("path", markdownPath))
-	fmt.Printf("\n\nExported to: %s\n\n", markdownPath)
+	logger.Info("Exported to", zap.String("path", path))
 	return nil
 }
 
