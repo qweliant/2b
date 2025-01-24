@@ -5,11 +5,9 @@ import (
 	"app/backend/repositories"
 	"app/backend/util"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
-	md "github.com/JohannesKaufmann/html-to-markdown"
 	"go.uber.org/zap"
 )
 
