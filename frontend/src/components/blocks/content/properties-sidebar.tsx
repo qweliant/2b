@@ -1,5 +1,4 @@
-import React, { memo } from "react";
-import { useObject, useObjectWithSelect } from "@/store/objectsStore";
+import { memo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ObjectType } from "../../../types/objectTypes";
 import { Button } from "../../ui/button";
@@ -15,10 +14,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
-import ObjectSelect from "../../object-select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useObjectWithSelect } from "@/store/objectsStore";
 
-import { createPortal } from "react-dom";
 interface PropertiesSidebarProps {
   id: string;
 }
@@ -37,6 +34,7 @@ const PropertiesSidebar = memo(
       enabled: !!objectTypeId,
     });
 
+    const [month, setMonth] = useState(undefined);
     if (!object || !objectType || !object.properties) {
       return <div>Loading...</div>;
     }
@@ -160,6 +158,11 @@ const PropertiesSidebar = memo(
                       });
                       mutate(newObject);
                     }}
+                    defaultMonth={
+                      property?.valueDate
+                        ? new Date(property.valueDate)
+                        : undefined
+                    }
                   />
                 </div>
               );
