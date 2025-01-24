@@ -1,4 +1,5 @@
-import { memo, useState } from "react";
+import React, { memo, useState } from "react";
+import { useObject } from "@/store/objectsStore";
 import { useQuery } from "@tanstack/react-query";
 import { ObjectType } from "../../../types/objectTypes";
 import { Button } from "../../ui/button";
@@ -36,6 +37,7 @@ const PropertiesSidebar = memo(
       enabled: !!objectTypeId,
     });
 
+    const [month, setMonth] = useState(undefined);
     if (!object || !objectType || !object.properties) {
       return <div>Loading...</div>;
     }

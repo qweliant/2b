@@ -28,7 +28,7 @@ const objectToMarkdown = (
   const {
     includeExportDate = false,
     indentSize = 3,
-    escapeSpecialChars = false,
+    escapeSpecialChars = true,
   } = options;
   const indent = " ".repeat(indentSize);
 
