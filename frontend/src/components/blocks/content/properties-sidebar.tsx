@@ -16,6 +16,8 @@ import {
 } from "../../ui/dropdown-menu";
 import { useObjectWithSelect } from "@/store/objectsStore";
 
+import ObjectSelect from "../../object-select";
+import { createPortal } from "react-dom";
 interface PropertiesSidebarProps {
   id: string;
 }
