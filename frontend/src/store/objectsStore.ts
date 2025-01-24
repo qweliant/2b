@@ -39,8 +39,7 @@ const PropertyValueSchema = z.object({
   valueDate: z.string().optional(),
   referencedObjectId: z.string().optional(),
 });
-
-const PropertyValueMapSchema = z.record(PropertyValueSchema);
+type PropertyValue = z.infer<typeof PropertyValueSchema>;
 
 const ObjectInstanceSchema = z.strictObject({
   id: z.string().uuid(),
@@ -49,7 +48,7 @@ const ObjectInstanceSchema = z.strictObject({
   pinned: z.boolean().default(false),
   description: z.string().optional(),
   contents: z.record(ContentTypeSchema).optional(),
-  properties: PropertyValueMapSchema,
+  properties: z.record(PropertyValueSchema),
   aiReady: z.boolean().default(false).optional(),
   pageCustomization: z.object({
     backgroundColor: z.string().default(""),
@@ -218,7 +217,7 @@ function useBackgroundColor(id: string) {
   };
 }
 
-export type { ObjectInstance, ObjectContent };
+export type { ObjectInstance, ObjectContent, PropertyValue };
 export {
   ObjectInstanceSchema,
   ContentTypes,

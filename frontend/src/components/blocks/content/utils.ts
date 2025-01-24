@@ -2,6 +2,7 @@ import {
   ObjectInstance,
   ObjectContent,
   PropertyValueSchema,
+  PropertyValue,
 } from "@/store/objectsStore";
 import { z } from "zod";
 
@@ -24,31 +25,42 @@ const objectToMarkdown = (
   options: FormattingOptions = {}
 ): string => {
   const {
-    includeExportDate = true,
-    indentSize = 2,
-    includeToc = false,
-    escapeSpecialChars = true,
+    includeExportDate = false,
+    indentSize = 3,
+    escapeSpecialChars = false,
   } = options;
 
   const indent = " ".repeat(indentSize);
 
-  // Helper function to escape special characters
-  const escape = (text: string): string => {
-    if (!escapeSpecialChars) return text;
-    return text.replace(/[_*[\]()~`>#+=|{}.!-]/g, "\\$&");
+  const escape = (text: string): string =>
+    escapeSpecialChars ? text.replace(/[_*[\]()~`>#+=|{}.!-]/g, "\\$&") : text;
+
+  // Helper to format dates
+  const formatDate = (date: string | Date): string =>
+    new Date(date).toISOString();
+
+  // Recursive function to format frontmatter values
+  const formatValue = (value: any, depth = 0): string => {
+    if (typeof value === "object" && value !== null) {
+      const isArray = Array.isArray(value);
+      const entries = Object.entries(value)
+        .map(
+          ([k, v]) =>
+            `${indent.repeat(depth + 1)}${k}: ${formatValue(v, depth + 1)}`
+        )
+        .join("\n");
+      return isArray
+        ? `[\n${entries}\n${indent.repeat(depth)}]`
+        : `\n${entries}`;
+    }
+    return typeof value === "string" ? `"${value}"` : `${value}`;
   };
 
-  // Helper function to format dates
-  const formatDate = (date: string | Date): string => {
-    const d = new Date(date);
-    return d.toISOString();
-  };
-
-  // Generate YAML frontmatter with proper escaping
+  // Generate YAML frontmatter
   const generateFrontmatter = (): string => {
     const frontmatterObj = {
-      title: escape(object.title),
-      date: formatDate(new Date()),
+      title: object.title,
+      date: includeExportDate ? formatDate(new Date()) : undefined,
       type: object.type,
       pinned: object.pinned,
       ...(object.description && { description: escape(object.description) }),
@@ -59,32 +71,41 @@ const objectToMarkdown = (
         defaultFont: object.pageCustomization.defaultFont,
         freeDrag: object.pageCustomization.freeDrag,
       },
+      properties: Object.entries(object.properties).reduce(
+        (acc: Record<string, Omit<PropertyValue, "id">>, [id, prop]) => {
+          acc[id] = {
+            objectId: prop.objectId,
+            ...(prop.value !== undefined && { value: prop.value }),
+            ...(prop.valueBoolean !== undefined && {
+              boolean: prop.valueBoolean,
+            }),
+            ...(prop.valueNumber !== undefined && { number: prop.valueNumber }),
+            ...(prop.valueDate && { date: formatDate(prop.valueDate) }),
+            ...(prop.referencedObjectId && {
+              referencedObjectId: prop.referencedObjectId,
+            }),
+          };
+          return acc;
+        },
+        {} as Record<string, Omit<PropertyValue, "id">>
+      ),
     };
 
-    const formatValue = (value: any): string => {
-      if (typeof value === "object") {
-        return (
-          "\n" +
-          Object.entries(value)
-            .map(([k, v]) => `${indent}${k}: ${formatValue(v)}`)
-            .join("\n")
-        );
-      }
-      return typeof value === "string" ? `"${value}"` : `${value}`;
-    };
-
-    const frontmatter = Object.entries(frontmatterObj)
-      .map(([key, value]) => `${key}: ${formatValue(value)}`)
-      .join("\n");
-
-    return `---\n${frontmatter}\n---\n\n`;
+    return (
+      "---\n" +
+      Object.entries(frontmatterObj)
+        .filter(([_, value]) => value !== undefined) // Remove undefined fields
+        .map(([key, value]) => `${key}: ${formatValue(value)}`)
+        .join("\n") +
+      "\n---\n\n"
+    );
   };
 
   // Format content based on type
   const formatContent = (content: ObjectContent): string => {
     switch (content.type) {
       case "text":
-        return `${content.content}\n\n`;
+        return `${escape(content.content as string)}\n\n`;
       case "image":
         return `![Image](${content.content})\n\n`;
       case "file":
@@ -98,31 +119,6 @@ const objectToMarkdown = (
     }
   };
 
-  // Format properties
-  const formatProperties = (
-    properties: Record<string, z.infer<typeof PropertyValueSchema>>
-  ): string => {
-    let result = "## Properties\n\n";
-
-    Object.entries(properties).forEach(([id, prop]) => {
-      result += `- **Property ID**: \`${id}\`\n`;
-      result += `${indent}- Object ID: \`${prop.objectId}\`\n`;
-
-      if (prop.value !== undefined)
-        result += `${indent}- Value: ${escape(prop.value)}\n`;
-      if (prop.valueBoolean !== undefined)
-        result += `${indent}- Boolean Value: ${prop.valueBoolean}\n`;
-      if (prop.valueNumber !== undefined)
-        result += `${indent}- Number Value: ${prop.valueNumber}\n`;
-      if (prop.valueDate)
-        result += `${indent}- Date: ${formatDate(prop.valueDate)}\n`;
-      if (prop.referencedObjectId)
-        result += `${indent}- Referenced Object ID: \`${prop.referencedObjectId}\`\n`;
-    });
-
-    return result + "\n";
-  };
-
   // Build the complete markdown
   let markdown = generateFrontmatter();
 
@@ -130,30 +126,16 @@ const objectToMarkdown = (
   markdown += `# ${escape(object.title)}\n\n`;
 
   // Add description if present
-  if (object.description) {
-    markdown += `${escape(object.description)}\n\n`;
-  }
+  if (object.description) markdown += `${escape(object.description)}\n\n`;
 
   // Add contents
   if (object.contents && Object.keys(object.contents).length > 0) {
-    markdown += "## Contents\n\n";
-    Object.entries(object.contents).forEach(([id, content]) => {
-      markdown += `### Content ID: \`${id}\`\n\n`;
+    Object.values(object.contents).forEach((content) => {
       markdown += formatContent(content);
-      markdown += `Position: x=${content.x}, y=${content.y}, w=${content.w}, h=${content.h}\n\n`;
     });
   }
 
-  // Add properties
-  if (object.properties && Object.keys(object.properties).length > 0) {
-    markdown += formatProperties(object.properties);
-  }
-
-  // Add export date if enabled
-  if (includeExportDate) {
-    markdown += `---\nExported on ${formatDate(new Date())}`;
-  }
-
+  console.log("CLIENT SIDE MD", markdown);
   return markdown;
 };
 
