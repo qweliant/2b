@@ -5,6 +5,7 @@ import {
   PropertyValue,
 } from "@/store/objectsStore";
 import { z } from "zod";
+import DOMPurify from "dompurify";
 
 interface FormattingOptions {
   includeExportDate?: boolean;
@@ -29,7 +30,6 @@ const objectToMarkdown = (
     indentSize = 3,
     escapeSpecialChars = false,
   } = options;
-
   const indent = " ".repeat(indentSize);
 
   const escape = (text: string): string =>
@@ -109,7 +109,7 @@ const objectToMarkdown = (
   const formatContent = (content: ObjectContent): string => {
     switch (content.type) {
       case "text":
-        return `${escape(content.content as string)}\n\n`;
+        return `${content.content}\n\n`;
       case "image":
         return `![Image](${content.content})\n\n`;
       case "file":
@@ -139,8 +139,9 @@ const objectToMarkdown = (
     });
   }
 
-  console.log("CLIENT SIDE MD", markdown);
-  return markdown;
+  return DOMPurify.sanitize(markdown);
 };
 
 export default objectToMarkdown;
+
+

@@ -19,7 +19,10 @@ import {
   CodeBlockExtension,
   ImageExtension,
 } from "remirror/extensions";
-import { MarkdownEditor } from "@remirror/react-editors/markdown";
+import { basicSetup } from "@codemirror/basic-setup";
+import { languages } from "@codemirror/language-data";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { CodeMirrorExtension } from "@remirror/extension-codemirror6";
 import {
   ReactExtensions,
   ReactFrameworkOutput,
@@ -55,13 +58,16 @@ const extensions = () => [
     priority: ExtensionPriority.High,
     enableCollapsible: true,
   }),
-  new CodeExtension(),
+  new CodeExtension({}),
   new MarkdownExtension({}),
   new HardBreakExtension(),
   new FontFamilyExtension({}),
   new PositionerExtension({}),
   new UnderlineExtension(),
-  new ImageExtension({})
+  new ImageExtension({}),
+  new CodeMirrorExtension({
+    languages: languages,
+  }),
 ];
 
 export type Extensions = ReactExtensions<
@@ -84,20 +90,13 @@ export type Extensions = ReactExtensions<
   | CalloutExtension
   | CodeBlockExtension
   | ImageExtension
+  | CodeMirrorExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
   content: string;
   defaultFont: string;
   freeDrag: boolean;
-}
-
-function MarkdownPreview({ markdown }: { markdown: string }) {
-  return (
-    <div className="prose prose-sm max-w-none p-4 border-l">
-      <div dangerouslySetInnerHTML={{ __html: marked(markdown) }} />
-    </div>
-  );
 }
 
 const TextEditor = forwardRef<
@@ -150,9 +149,6 @@ const TextEditor = forwardRef<
           </ThemeProvider>
         </div>
       </div>
-      {/* <div className="bg-white text-green-600">
-        <MarkdownPreview markdown={markdown} />
-      </div> */}
     </div>
   );
 });
