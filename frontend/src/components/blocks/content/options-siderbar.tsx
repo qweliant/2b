@@ -46,7 +46,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/dialog";
-import { prosemirrorNodeToHtml } from "remirror";
 import objectToMarkdown from "./utils";
 
 const OptionsSidebar = ({
@@ -121,13 +120,6 @@ const OptionsSidebar = ({
 
       // Clean up
       return () => unsubscribe();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (editorRef.current) {
-      const html = prosemirrorNodeToHtml(editorRef.current?.getState().doc);
-      setHtml(html);
     }
   }, []);
 
