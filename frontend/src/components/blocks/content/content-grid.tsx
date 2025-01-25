@@ -13,6 +13,7 @@ import { GetSummary } from "../../../../wailsjs/go/main/App";
 import { useMessageStore } from "../../../store/chatStore";
 import TextBlock from "./text/text-block";
 import ImageBlock from "./image/image-block";
+import DrawingBlock from "./draw/drawing-block";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -31,8 +32,9 @@ const ContentGrid = ({
   mutate: (newObject: ObjectInstance) => void;
   editorRef: React.MutableRefObject<ReactFrameworkOutput<Extensions> | null>;
 }) => {
-  const { addMessage, messages } = useMessageStore();
-
+  const [activeTextBlock, setActiveTextBlock] = React.useState<string | null>(
+    null
+  );
   return (
     <ResponsiveGridLayout
       className="layout overflow-x-clip"
@@ -71,7 +73,7 @@ const ContentGrid = ({
         mutate(newObject);
       }}
       width={window.innerWidth - 40} // Subtracting padding
-      preventCollision={true}
+      preventCollision={false}
       draggableHandle=".drag-handle"
       onLayoutChange={(layout) => {
         const newObject = produce(object, (draft) => {
@@ -98,12 +100,21 @@ const ContentGrid = ({
               <div className={cn("content-block relative group")} key={key}>
                 <TextBlock
                   freeDrag={freeDrag}
-                  editorRef={editorRef}
+                  editorRef={
+                    activeTextBlock === key ? editorRef : { current: null }
+                  }
                   object={object}
                   contentObject={contentObj}
                   defaultFont={defaultFont}
                   contentKey={key}
                   mutate={mutate}
+                  key={key}
+                  onBlur={() =>
+                    activeTextBlock === key
+                      ? () => setActiveTextBlock(null)
+                      : undefined
+                  }
+                  onFocus={() => setActiveTextBlock(key)}
                 />
               </div>
             );
@@ -123,8 +134,15 @@ const ContentGrid = ({
                 />
               </div>
             );
+          } else if (contentObj.type === "drawing") {
+            return (
+              <div key={key}>
+                <DrawingBlock />
+              </div>
+            );
+          } else {
+            return null;
           }
-          return null;
         })}
     </ResponsiveGridLayout>
   );

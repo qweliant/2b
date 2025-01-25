@@ -21,7 +21,6 @@ type ObjectType struct {
 	Name           string                  `json:"name" db:"name"`
 	Description    string                  `json:"description" db:"description"`
 	Color          string                  `json:"color" db:"color"`
-	Icon           string                  `json:"icon" db:"icon"`
 	Fixed          bool                    `json:"fixed" db:"fixed"`
 	BaseObjectType BaseObjectType          `json:"baseType" db:"base_object_type"`
 	PropertyTypes  map[string]PropertyType `json:"properties" db:"-"` // derived field

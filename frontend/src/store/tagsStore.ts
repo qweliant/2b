@@ -51,7 +51,6 @@ function useCreateTag() {
       id: newId,
       type: "tag",
       contents: {},
-      pinned: false,
       pageCustomization: {
         backgroundColor: "",
         backgroundImage: "",
@@ -59,6 +58,7 @@ function useCreateTag() {
         freeDrag: false,
       },
       aiReady: false,
+      pinned: false,
     };
     await create(newId, newTag);
   };

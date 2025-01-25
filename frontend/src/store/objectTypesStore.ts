@@ -69,6 +69,30 @@ function useObjectType(id: string) {
   });
 }
 
+function useUpdateObjectType(id: string) {
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationKey: ["updateObjectType", id],
+    mutationFn: async (updatedObjectType: string) => {
+      await WriteObjectTypeFile(id, updatedObjectType);
+    },
+    onMutate: async (updatedObjectType: string) => {
+      console.log("onMutate", updatedObjectType);
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: [ALL_OBJECT_TYPE_QUERY_KEY, "ALL"],
+      });
+    },
+    onError: async (error) => {
+      console.log("onError", error);
+    },
+  });
+  return async (newState: ObjectType) => {
+    mutate(JSON.stringify(newState));
+  };
+}
+
 function useCreateObjectType(newId: string) {
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
@@ -135,5 +159,6 @@ export {
   useCreateObjectType,
   useObjectTypesUnsavedStore,
   ALL_OBJECT_TYPE_QUERY_KEY,
+  useUpdateObjectType
   //   useObjectTypesStore,
 };
