@@ -109,7 +109,7 @@ const objectToMarkdown = (
   const formatContent = (content: ObjectContent): string => {
     switch (content.type) {
       case "text":
-        return `${escape(content.content as string)}\n\n`;
+        return `${content.content}\n\n`;
       case "image":
         return `![Image](${content.content})\n\n`;
       case "file":
