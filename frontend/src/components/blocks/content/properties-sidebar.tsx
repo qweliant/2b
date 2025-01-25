@@ -1,24 +1,17 @@
-import React, { memo, useState } from "react";
+import { memo, useState } from "react";
 import { useObject } from "@/store/objectsStore";
 import { useQuery } from "@tanstack/react-query";
 import { ObjectType } from "../../../types/objectTypes";
-import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Calendar } from "../../ui/calendar";
-import { CalendarIcon, HashIcon } from "lucide-react";
+import { HashIcon } from "lucide-react";
 import { Switch } from "../../ui/switch";
 import { produce } from "immer";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+
 import ObjectSelect from "../../object-select";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { createPortal } from "react-dom";
 interface PropertiesSidebarProps {
   id: string;
 }
