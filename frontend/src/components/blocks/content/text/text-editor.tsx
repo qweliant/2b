@@ -6,9 +6,6 @@ import {
   HardBreakExtension,
   HeadingExtension,
   ItalicExtension,
-  LinkExtension,
-  ListItemExtension,
-  CalloutExtension,
   MarkdownExtension,
   OrderedListExtension,
   PlaceholderExtension,
@@ -16,26 +13,31 @@ import {
   FontFamilyExtension,
   PositionerExtension,
   UnderlineExtension,
+  CalloutExtension,
+  LinkExtension,
+  ListItemExtension,
+  CodeBlockExtension,
+  ImageExtension,
 } from "remirror/extensions";
+import { basicSetup } from "@codemirror/basic-setup";
+import { languages } from "@codemirror/language-data";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { CodeMirrorExtension } from "@remirror/extension-codemirror6";
 import {
   ReactExtensions,
   ReactFrameworkOutput,
   Remirror,
-  useHelpers,
   useRemirror,
 } from "@remirror/react";
-import { ExtensionPriority, htmlToProsemirrorNode } from "remirror";
 import "remirror/styles/all.css";
 import "../../../../remirror.css";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { ObjectInstance } from "../../../../store/objectsStore";
-import debounce from "lodash/debounce";
-import { prosemirrorNodeToHtml } from "remirror";
 import useDebounce from "../../../../lib/use-debounce";
 import { ThemeProvider } from "@remirror/react";
-import { Button } from "../../../ui/button";
 import { cn } from "../../../../lib/utils";
-// import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
+import { marked } from "marked";
+import { EditorState, ExtensionPriority } from "remirror";
+
 const extensions = () => [
   new PlaceholderExtension({
     placeholder: "Type here...",
@@ -43,8 +45,8 @@ const extensions = () => [
   }),
   new BoldExtension({}),
   new ItalicExtension(),
-  // new CalloutExtension({ defaultType: "warn" }), // Override defaultType: 'info'
-  // new LinkExtension({ autoLink: true }),
+  new CalloutExtension({ defaultType: "warn" }), // Override defaultType: 'info'
+  new LinkExtension({ autoLink: true }),
 
   new StrikeExtension(),
   new ItalicExtension(),
@@ -52,16 +54,20 @@ const extensions = () => [
   new BlockquoteExtension(),
   new BulletListExtension({}),
   new OrderedListExtension(),
-  // new ListItemExtension({
-  //   priority: ExtensionPriority.High,
-  //   enableCollapsible: true,
-  // }),
-  new CodeExtension(),
+  new ListItemExtension({
+    priority: ExtensionPriority.High,
+    enableCollapsible: true,
+  }),
+  new CodeExtension({}),
   new MarkdownExtension({}),
   new HardBreakExtension(),
   new FontFamilyExtension({}),
   new PositionerExtension({}),
   new UnderlineExtension(),
+  new ImageExtension({}),
+  new CodeMirrorExtension({
+    languages: languages,
+  }),
 ];
 
 export type Extensions = ReactExtensions<
@@ -79,6 +85,12 @@ export type Extensions = ReactExtensions<
   | PositionerExtension
   | UnderlineExtension
   | MarkdownExtension
+  | LinkExtension
+  | ListItemExtension
+  | CalloutExtension
+  | CodeBlockExtension
+  | ImageExtension
+  | CodeMirrorExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
@@ -90,29 +102,34 @@ interface TextEditorProps {
 const TextEditor = forwardRef<
   ReactFrameworkOutput<Extensions>,
   TextEditorProps
->(({ mutate, content, defaultFont,freeDrag }, ref) => {
+>(({ mutate, content, defaultFont, freeDrag }, ref) => {
   const { manager, getContext, state, setState } = useRemirror({
     extensions: extensions,
     content: content,
     stringHandler: "markdown",
   });
-  const [value, setValue] = useState<string>(
-    getContext()?.helpers?.getMarkdown() ?? ""
+  const [markdown, setMarkdown] = useState<string>(
+    getContext()?.helpers?.getMarkdown() ?? content
   );
-  const debouncedValue = useDebounce(value, 300);
+  const debouncedMarkdown = useDebounce(markdown, 300);
   useEffect(() => {
-    mutate(debouncedValue);
-  }, [debouncedValue]);
+    mutate(debouncedMarkdown);
+  }, [debouncedMarkdown]);
 
   //@ts-expect-error - This is a hack to get the context
   useImperativeHandle(ref, () => getContext(), [getContext]);
+
+  const handleEditorChange = ({ state }: { state: EditorState }) => {
+    const newMarkdown = getContext()?.helpers?.getMarkdown() ?? "";
+    setMarkdown(newMarkdown);
+    setState(state); // Update the ProseMirror document state
+  };
 
   return (
     <div
       className={cn(
         "h-full rounded-lg bg-background border border-transparent ",
         freeDrag && "border-border/80 hover:border-border"
-
       )}
     >
       <div className="h-full overflow-y-scroll">
@@ -126,11 +143,7 @@ const TextEditor = forwardRef<
           >
             <Remirror
               manager={manager}
-              onChange={({ state }) => {
-                const markdown = getContext()?.helpers?.getMarkdown();
-                setValue(markdown ?? "");
-                setState(state);
-              }}
+              onChange={handleEditorChange}
               state={state}
             ></Remirror>
           </ThemeProvider>

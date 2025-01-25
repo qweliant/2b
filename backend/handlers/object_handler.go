@@ -4,8 +4,11 @@ import (
 	"app/backend/models"
 	"app/backend/repositories"
 	"app/backend/util"
+	"fmt"
+	"log"
+	"os"
+	"strings"
 
-	"github.com/adrg/xdg"
 	"go.uber.org/zap"
 )
 
@@ -21,13 +24,38 @@ func NewObjectHandler(
 	return &ObjectHandler{objectRepository, propertyTypeRepository}
 }
 
+// sanitizeTitle removes unwanted characters and replaces spaces with underscores.
+func sanitizeTitle(title string) string {
+	// Replace spaces with underscores
+	title = strings.ReplaceAll(title, " ", "_")
+	// Remove all characters that are not letters, digits, underscores, or hyphens
+	sanitized := strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '-' {
+			return r
+		}
+		return -1
+	}, title)
+	return sanitized
+}
+
 // DEPRECATED
-func getObjectFilePath(objectID string) (string, error) {
-	filepath, err := xdg.DataFile("liha/objects/" + objectID + ".json")
-	if err != nil {
-		return "", err
+
+func getObjectFilePath(title string) (string, error) {
+	// Define the base path for your content directory
+	basePath := "/Users/qwelian/Programs/apps/blog/content/"
+
+	// Sanitize the title
+	title = sanitizeTitle(title)
+
+	// Combine the base path and title with the desired file extension
+	filePath := basePath + title + ".mdx"
+
+	// Check if the directory exists
+	if _, err := os.Stat(basePath); os.IsNotExist(err) {
+		return "", fmt.Errorf("base path does not exist: %s", basePath)
 	}
-	return filepath, nil
+
+	return filePath, nil
 }
 
 func (o *ObjectHandler) GetAllObjectIDs(logger *zap.Logger) ([]string, error) {
@@ -88,13 +116,26 @@ func ReadObjectFile(objectID string, logger *zap.Logger) (string, error) {
 	return util.ReadJSONFile(path, logger)
 }
 
-func WriteObjectFile(objectID string, object string, logger *zap.Logger) error {
-	path, err := getObjectFilePath(objectID)
+func WriteObjectFile(id string, html string, title string, logger *zap.Logger) error {
+	path, err := getObjectFilePath(title)
 	if err != nil {
 		logger.Error("Error getting object file path", zap.Error(err))
 		return err
 	}
-	return util.WriteJSONFile(path, object, logger)
+	// converter := md.NewConverter("", true, nil)
+	// markdown, err := converter.ConvertString(html)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = os.WriteFile(path, []byte(html), 0644)
+	if err != nil {
+		logger.Error("Error writing markdown file", zap.Error(err))
+		return err
+	}
+
+	logger.Info("Exported to", zap.String("path", path))
+	return nil
 }
 
 func DeleteObjectFile(objectID string, logger *zap.Logger) error {

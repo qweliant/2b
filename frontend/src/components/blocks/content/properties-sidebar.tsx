@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { useObject } from "@/store/objectsStore";
 import { useQuery } from "@tanstack/react-query";
 import { ObjectType } from "../../../types/objectTypes";
@@ -18,6 +18,7 @@ import {
 import ObjectSelect from "../../object-select";
 import { Checkbox } from "@/components/ui/checkbox";
 
+import { createPortal } from "react-dom";
 interface PropertiesSidebarProps {
   id: string;
 }
@@ -31,6 +32,7 @@ const PropertiesSidebar = memo(
       enabled: !!objectTypeId,
     });
 
+    const [month, setMonth] = useState(undefined);
     if (!object || !objectType || !object.properties) {
       return <div>Loading...</div>;
     }
@@ -94,35 +96,27 @@ const PropertiesSidebar = memo(
               return (
                 <div key={key}>
                   <Label>{objectType.properties[key].name}</Label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className="w-full justify-start text-left font-normal text-muted-foreground"
-                      >
-                        <CalendarIcon className="mr-2" size={12} />
-                        {property?.valueDate
-                          ? new Date(property.valueDate).toLocaleDateString()
-                          : "Pick a date"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-auto p-0">
-                      <DropdownMenuItem className="focus:bg-primary-background hover:bg-primary-background">
-                        <Calendar
-                          mode="single"
-                          initialFocus
-                          onDayClick={(day) => {
-                            const draft = { ...object };
-                            const newObject = produce(draft, (draft) => {
-                              draft.properties[key].valueDate =
-                                day.toISOString();
-                            });
-                            mutate(newObject);
-                          }}
-                        />
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Calendar
+                    mode="single"
+                    selected={
+                      property?.valueDate
+                        ? new Date(property.valueDate)
+                        : undefined
+                    }
+                    onSelect={(day) => {
+                      if (!day) return; // If no day is selected, exit early.
+                      const draft = { ...object };
+                      const newObject = produce(draft, (draft) => {
+                        draft.properties[key].valueDate = day.toISOString();
+                      });
+                      mutate(newObject);
+                    }}
+                    defaultMonth={
+                      property?.valueDate
+                        ? new Date(property.valueDate)
+                        : undefined
+                    }
+                  />
                 </div>
               );
             }

@@ -5,6 +5,7 @@ import {
   GetAllObjects,
   GetObject,
   UpdateObject,
+  WriteObjectFile,
 } from "../../wailsjs/go/main/App";
 import { useQueryWrapper } from "./util";
 import {
@@ -38,8 +39,7 @@ const PropertyValueSchema = z.object({
   valueDate: z.string().optional(),
   referencedObjectId: z.string().optional(),
 });
-
-const PropertyValueMapSchema = z.record(PropertyValueSchema);
+type PropertyValue = z.infer<typeof PropertyValueSchema>;
 
 const ObjectInstanceSchema = z.strictObject({
   id: z.string().uuid(),
@@ -48,7 +48,7 @@ const ObjectInstanceSchema = z.strictObject({
   pinned: z.boolean().default(false),
   description: z.string().optional(),
   contents: z.record(ContentTypeSchema).optional(),
-  properties: PropertyValueMapSchema,
+  properties: z.record(PropertyValueSchema),
   aiReady: z.boolean().default(false).optional(),
   pageCustomization: z.object({
     backgroundColor: z.string().default(""),
@@ -142,10 +142,12 @@ function useObjectsOfType(type: string) {
   const { data: allObjectIDs } = useAllObjectsIDs();
   const allObjectsQueries = useAllObjects(allObjectIDs);
   const allObjects = allObjectsQueries.map((query) => query.data);
-  const filteredObjects =  allObjects.filter((object) => object && object.type === type);
+  const filteredObjects = allObjects.filter(
+    (object) => object && object.type === type
+  );
   return filteredObjects as ObjectInstance[];
 }
-``
+``;
 function useObject(id: string) {
   return useQueryWrapper<ObjectInstance>({
     queryKey: ["object", id],
@@ -168,6 +170,16 @@ function useDeleteObject() {
     queryClient.invalidateQueries({
       queryKey: ["objects", "object", id],
     });
+  };
+}
+
+function useWriteObject() {
+  return async (id: string, html: string, title: string) => {
+    if (!id) {
+      console.error("Object ID is undefined.");
+      return;
+    }
+    await WriteObjectFile(id, html, title);
   };
 }
 
@@ -205,10 +217,11 @@ function useBackgroundColor(id: string) {
   };
 }
 
-export type { ObjectInstance, ObjectContent };
+export type { ObjectInstance, ObjectContent, PropertyValue };
 export {
   ObjectInstanceSchema,
   ContentTypes,
+  PropertyValueSchema,
   useCreateObject,
   useObject,
   useAllObjects,
@@ -217,5 +230,6 @@ export {
   useDefaultFont,
   useBackgroundColor,
   useObjectsOfType,
+  useWriteObject,
   DEFAULT_OBJECT,
 };

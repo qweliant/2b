@@ -22,7 +22,13 @@ import {
   Play,
   Underline,
 } from "lucide-react";
-import { ContentTypes, useDeleteObject } from "../../../store/objectsStore";
+import {
+  ContentTypes,
+  ObjectInstance,
+  useDeleteObject,
+  useObject,
+  useWriteObject,
+} from "../../../store/objectsStore";
 import { Button } from "../../ui/button";
 import { Separator } from "@radix-ui/react-select";
 import { Switch } from "../../ui/switch";
@@ -40,6 +46,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/dialog";
+import objectToMarkdown from "./utils";
+
 const OptionsSidebar = ({
   editorRef,
   backgroundColor,
@@ -70,9 +78,13 @@ const OptionsSidebar = ({
     // alignRight: false,
     // alignJustify: false,
   });
+  const [html, setHtml] = useState<string>("");
   const { tabsState } = useTabsState();
   const deleteObject = useDeleteObject();
+  const writeObject = useWriteObject();
 
+  const obj = useObject(tabsState.activeTab || "NONE");
+  console.log("OBJECTS: ", obj.data, "\n");
   useEffect(() => {
     if (editorRef.current) {
       const editorContext = editorRef.current;
@@ -110,6 +122,7 @@ const OptionsSidebar = ({
       return () => unsubscribe();
     }
   }, []);
+
   return (
     <Tabs defaultValue="add">
       <TabsList className="w-full shadow-inner rounded-none h-[50px]">
@@ -139,7 +152,9 @@ const OptionsSidebar = ({
               unselectable="on"
               className={cn(
                 "flex justify-between items-center w-full border rounded-md p-2 cursor-move",
-                (type !== "text" && type !== 'image')&& "pointer-events-none opacity-30"
+                type !== "text" &&
+                  type !== "image" &&
+                  "pointer-events-none opacity-30"
               )}
               onDragStart={(e) => {
                 e.dataTransfer.setData("text/plain", type);
@@ -404,6 +419,23 @@ const OptionsSidebar = ({
         </div>
       </TabsContent>
       <TabsContent value="info" className="h-full flex flex-col px-3 gap-4">
+        <Button
+          variant="default"
+          onClick={() => {
+            if (tabsState.activeTab) {
+              const objMd = objectToMarkdown(
+                obj.data as unknown as ObjectInstance
+              );
+              writeObject(
+                tabsState.activeTab,
+                objMd,
+                obj.data?.title ?? "Title"
+              );
+            }
+          }}
+        >
+          Export
+        </Button>
         <Dialog>
           <DialogContent>
             <DialogTitle>
