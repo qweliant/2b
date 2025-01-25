@@ -20,7 +20,10 @@ import {
   CodeBlockExtension,
   ImageExtension,
 } from "remirror/extensions";
-import { MarkdownEditor } from "@remirror/react-editors/markdown";
+import { basicSetup } from "@codemirror/basic-setup";
+import { languages } from "@codemirror/language-data";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { CodeMirrorExtension } from "@remirror/extension-codemirror6";
 import {
   ReactExtensions,
   ReactFrameworkOutput,
@@ -65,6 +68,11 @@ const extensions = () => [
   new BulletListExtension({}),
   new OrderedListExtension(),
   new CodeExtension(),
+  new ListItemExtension({
+    priority: ExtensionPriority.High,
+    enableCollapsible: true,
+  }),
+  new CodeExtension({}),
   new MarkdownExtension({}),
   new HardBreakExtension(),
   new FontFamilyExtension({}),
@@ -77,7 +85,10 @@ const extensions = () => [
     supportedLanguages: [typescript],
     defaultLanguage: "markdown",
     syntaxTheme: "base16_ateliersulphurpool_light",
-    defaultWrap: true,
+    defaultWrap: true,}),
+  new ImageExtension({}),
+  new CodeMirrorExtension({
+    languages: languages,
   }),
 ];
 
@@ -104,6 +115,7 @@ export type Extensions = ReactExtensions<
   | CalloutExtension
   | CodeBlockExtension
   | ImageExtension
+  | CodeMirrorExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
