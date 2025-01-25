@@ -150,9 +150,9 @@ const TextEditor = forwardRef<
           </ThemeProvider>
         </div>
       </div>
-      <div className="bg-white text-green-600">
+      {/* <div className="bg-white text-green-600">
         <MarkdownPreview markdown={markdown} />
-      </div>
+      </div> */}
     </div>
   );
 });
