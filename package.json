@@ -1,7 +1,0 @@
-{
-	"dependencies": {
-		"@remirror/react-ui": "^1.0.1",
-		"create-context-state": "^2.0.3",
-		"typescript.js": "link:refractor/lang/typescript.js"
-	}
-}

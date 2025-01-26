@@ -19,11 +19,9 @@ import {
   LucideTablets,
   LucideX,
 } from "lucide-react";
-// import { useObjectTypesStore } from "@/store/objectsStore";
 import { Button } from "../../ui/button";
 import {
   DEFAULT_INBOX_TAB_ID,
-  DEFAULT_TODO_LIST_TAB_ID,
   useSidebarState,
   useTabsState,
 } from "@/store/miscStore";
@@ -71,7 +69,6 @@ const colorMap: {
 };
 
 const Sidebar = () => {
-  
   const { createTab, tabsState, removeTab, setActiveTab } = useTabsState();
   const { setSidebarOpen } = useSidebarState();
   const { addObjectType } = useObjectTypesUnsavedStore();
