@@ -8,8 +8,17 @@ import { Calendar } from "../../ui/calendar";
 import { HashIcon } from "lucide-react";
 import { Switch } from "../../ui/switch";
 import { produce } from "immer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../ui/dropdown-menu";
+import { useObjectWithSelect } from "@/store/objectsStore";
 
 import ObjectSelect from "../../object-select";
+import { createPortal } from "react-dom";
+
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface PropertiesSidebarProps {
@@ -18,7 +27,16 @@ interface PropertiesSidebarProps {
 
 const PropertiesSidebar = memo(
   ({ id }: PropertiesSidebarProps): JSX.Element => {
-    const { data: object, mutate } = useObject(id);
+    const { data: object, mutate } = useObjectWithSelect(
+      id,
+      "properties",
+      (object) => {
+        if (!object.properties) {
+          object.properties = {};
+        }
+        return object;
+      }
+    );
     const objectTypeId = object?.type;
     const { data: objectType } = useQuery<ObjectType>({
       queryKey: ["objectType", objectTypeId],
@@ -33,8 +51,8 @@ const PropertiesSidebar = memo(
     console.log("Object Properties:", object?.properties);
     return (
       <div className="px-2 py-4 flex flex-col gap-2">
-        {Object.entries(object.properties).map(
-          ([key, property]) => {
+        {object.properties &&
+          Object.entries(object.properties).map(([key, property]) => {
             if (objectType.properties[key].type === "text") {
               return (
                 <div key={key}>
@@ -44,6 +62,9 @@ const PropertiesSidebar = memo(
                     onChange={(e) => {
                       const draft = { ...object };
                       const newObject = produce(draft, (draft) => {
+                        if (!draft.properties) {
+                          draft.properties = {};
+                        }
                         draft.properties[key].value = e.target.value;
                       });
                       mutate(newObject);
@@ -71,6 +92,9 @@ const PropertiesSidebar = memo(
                       onChange={(e) => {
                         const draft = { ...object };
                         const newObject = produce(draft, (draft) => {
+                          if (!draft.properties) {
+                            draft.properties = {};
+                          }
                           draft.properties[key].valueNumber = Number(
                             e.target.value
                           );
@@ -113,38 +137,9 @@ const PropertiesSidebar = memo(
                 </div>
               );
             }
-            return (
-              <div key={key}>
-                <Label>{objectType.properties[key].name}</Label>
-                <ObjectSelect
-                  key={key}
-                  objectTypeID={objectType.properties[key].type}
-                  onValueChange={(value) => {
-                    if (
-                      !value ||
-                      value === "" ||
-                      value === property.referencedObjectId
-                    )
-                      return;
-                    const draft = { ...object };
-                    const newObject = produce(draft, (draft) => {
-                      draft.properties[key].referencedObjectId = value;
-                    });
-                    mutate(newObject);
-                  }}
-                  value={property.referencedObjectId ?? ""}
-                />
-              </div>
-            );
-          }
-          //   (
-          //     <p>
-          //       {objectType && objectType.properties[key].name}: {value} -{" "}
-          //       {objectType && objectType.properties[key].type}
-          //     </p>
-          //   )
-        )}
+          })}
         {/* <Button>Add Property</Button> */}
+        {!object.properties && <>No properties found</>}
       </div>
     );
   }

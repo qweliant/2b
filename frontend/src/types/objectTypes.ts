@@ -95,7 +95,6 @@ const ObjectTypeSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters long",
   }),
-  icon: z.string(),
   baseType: BaseObjectTypes,
   description: z.string().optional(),
   color: z.string(),

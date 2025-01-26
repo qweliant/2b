@@ -8,11 +8,11 @@ type Object struct {
 	ID                string              `json:"id" db:"id"`
 	Name              string              `json:"title" db:"name"`
 	Description       string              `json:"description,omitempty" db:"description"`
+	Fixed             bool                `json:"pinned" db:"fixed"`
 	ObjectTypeID      string              `json:"type" db:"object_type_id"`           // Foreign key to ObjectType
 	Contents          map[string]Content  `json:"contents,omitempty" db:"-"`          // derived field
 	PageCustomization PageCustomization   `json:"pageCustomization,omitempty" db:"-"` // derived field
 	Properties        map[string]Property `json:"properties,omitempty" db:"-"`        // derived field
-	Pinned            bool                `json:"pinned" db:"pinned"`
 }
 
 type Content struct {

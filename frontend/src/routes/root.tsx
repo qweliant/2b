@@ -7,7 +7,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { ImperativePanelHandle } from "react-resizable-panels";
-import { useBotSidebarState, useSidebarState } from "../store/layoutStore";
+import { useBotSidebarState, useSidebarState } from "../store/miscStore";
 import Content from "./content";
 import Botbar from "../components/blocks/layout/botbar";
 
@@ -54,14 +54,14 @@ const Root = () => {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel className="bg-muted h-full">
-          {/* <Header /> */}
+          <Header />
           <Content />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel
-          defaultSize={isBotSidebarOpen ? 20 : 0}
+          defaultSize={isBotSidebarOpen ? 35 : 0}
           minSize={15}
-          maxSize={25}
+          maxSize={50}
           collapsible
           onCollapse={() => setBotSidebarOpen(false)}
           onExpand={() => setBotSidebarOpen(true)}

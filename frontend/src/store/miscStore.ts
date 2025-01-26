@@ -15,6 +15,8 @@ const tabTypes = z.enum([
   "todoList",
 ]);
 
+const llm_providers = z.enum(["lm_studio", "open_ai"]);
+
 type TabType = z.infer<typeof tabTypes>;
 
 const tabSchema = z.object({
@@ -31,9 +33,13 @@ const stateSchema = z.object({
   isSidebarOpen: z.boolean(),
   tabsState: tabsSchema,
   isBotSidebarOpen: z.boolean().optional(),
+  llmProvider: llm_providers.optional(),
+  modelName: z.string().optional(),
+  serverURL: z.string().optional(),
 });
 
 type UIState = z.infer<typeof stateSchema>;
+type LLMProvider = z.infer<typeof llm_providers>;
 
 function useStateFile() {
   return useQueryWrapper<UIState>({
@@ -79,7 +85,8 @@ const removeTab = (
       (tab) => tab.id !== tabId
     );
     if (draft.tabsState.activeTab === tabId) {
-      draft.tabsState.activeTab = draft.tabsState.tabs[0]?.id ?? null;
+      draft.tabsState.activeTab =
+        draft.tabsState.tabs[draft.tabsState.tabs.length - 1]?.id ?? null;
     }
   });
   mutate(newState);
@@ -123,6 +130,59 @@ function useTabsState(): {
       createTab(tabId, tabType as any, data, mutate),
     removeTab: (tabId: string) => removeTab(tabId, data, mutate),
     setActiveTab: (tabId: string) => setActiveTab(tabId, data, mutate),
+    isLoading,
+    error,
+  };
+}
+
+function useLLMSettings(): {
+  llmProvider: UIState["llmProvider"];
+  modelName: UIState["modelName"];
+  serverURL: UIState["serverURL"];
+  setLLMProvider: (provider: LLMProvider) => void;
+  setModelName: (modelName: string) => void;
+  setServerUrl: (serverUrl: string) => void;
+  isLoading: boolean;
+  error: Error | null;
+} {
+  const { data, mutate, isLoading, error } = useStateFile();
+  if (!data) {
+    return {
+      llmProvider: "lm_studio",
+      modelName: "",
+      serverURL: "",
+      setLLMProvider: (provider: LLMProvider) => {},
+      setModelName: () => {},
+      setServerUrl: () => {},
+      isLoading,
+      error,
+    };
+  }
+
+  return {
+    llmProvider: data.llmProvider,
+    modelName: data.modelName,
+    serverURL: data.serverURL,
+    setLLMProvider: (provider: LLMProvider) => {
+      const newState = produce(data, (draft) => {
+        if (!draft.llmProvider) {
+        }
+        draft.llmProvider = provider;
+      });
+      mutate(newState);
+    },
+    setModelName: (modelName: string) => {
+      const newState = produce(data, (draft) => {
+        draft.modelName = modelName;
+      });
+      mutate(newState);
+    },
+    setServerUrl: (serverUrl: string) => {
+      const newState = produce(data, (draft) => {
+        draft.serverURL = serverUrl;
+      });
+      mutate(newState);
+    },
     isLoading,
     error,
   };
@@ -207,6 +267,8 @@ export {
   useSidebarState,
   useTabsState,
   useBotSidebarState,
+  useLLMSettings, 
   DEFAULT_TODO_LIST_TAB_ID,
   DEFAULT_INBOX_TAB_ID,
+  type LLMProvider
 };

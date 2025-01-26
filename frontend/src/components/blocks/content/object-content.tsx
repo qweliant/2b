@@ -15,7 +15,7 @@ import { Button } from "../../ui/button";
 import OptionsSidebar from "./options-siderbar";
 import { Separator } from "../../ui/separator";
 import { ReactFrameworkOutput } from "@remirror/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   useBackgroundColor,
@@ -37,6 +37,7 @@ const ObjectContent = ({ tabId }: { tabId: string }) => {
     isError,
     isPending,
     isSuccess,
+    isLoading
   } = useObject(tabId);
   const objectTypeID = object?.type;
   const { data: objectType } = useQuery<ObjectType>({
@@ -87,12 +88,13 @@ const ObjectContent = ({ tabId }: { tabId: string }) => {
   if (!object) return null;
   if (!objectType) return null;
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div
       className={cn(
-        "bg-background min-h-full h-full border rounded-md shadow-sm",
-        objectType?.color !== "" &&
-          `border-${objectType?.color.replace("bg-", "")}`
+        "bg-background min-h-full h-full border rounded-md shadow-sm"
       )}
     >
       <ResizablePanelGroup direction={"horizontal"} className="h-full">
@@ -138,7 +140,7 @@ const ObjectContent = ({ tabId }: { tabId: string }) => {
                 )}
               </Button>
               <Input
-                className="border-none text-xl font-semibold w-full focus:border focus:border-border focus:shadow-inner focus:shadow-secondary/20 hover:bg-secondary/10 focus:bg-secondary/30"
+                variant="ghost"
                 placeholder="Enter Title here"
                 value={object.title}
                 onChange={(e) => {
@@ -220,4 +222,4 @@ const ObjectContent = ({ tabId }: { tabId: string }) => {
   );
 };
 
-export default ObjectContent;
+export default memo(ObjectContent);

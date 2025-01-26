@@ -13,6 +13,7 @@ import {
   FontFamilyExtension,
   PositionerExtension,
   UnderlineExtension,
+  DocExtension,
   CalloutExtension,
   LinkExtension,
   ListItemExtension,
@@ -27,16 +28,35 @@ import {
   ReactExtensions,
   ReactFrameworkOutput,
   Remirror,
+  useHelpers,
   useRemirror,
+  useRemirrorContext,
 } from "@remirror/react";
 import "remirror/styles/all.css";
 import "../../../../remirror.css";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
+import debounce from "lodash/debounce";
+import { EditorState, ExtensionPriority, getThemeVar } from "remirror";
+import "remirror/styles/all.css";
+import "../../../../remirror.css";
 import useDebounce from "../../../../lib/use-debounce";
 import { ThemeProvider } from "@remirror/react";
 import { cn } from "../../../../lib/utils";
-import { marked } from "marked";
-import { EditorState, ExtensionPriority } from "remirror";
+import { FloatingToolbar } from "./floating-toolbar";
+import { DecorationsExtension } from "remirror";
+import { motion } from "framer-motion";
+import { TextColorExtension } from "remirror/extensions";
+// import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
+import { MarkdownToolbar } from "@remirror/react-ui";
+import typescript from "refractor/lang/typescript.js";
+import { createContextState } from "create-context-state";
 
 const extensions = () => [
   new PlaceholderExtension({
@@ -54,6 +74,7 @@ const extensions = () => [
   new BlockquoteExtension(),
   new BulletListExtension({}),
   new OrderedListExtension(),
+  new CodeExtension(),
   new ListItemExtension({
     priority: ExtensionPriority.High,
     enableCollapsible: true,
@@ -64,6 +85,15 @@ const extensions = () => [
   new FontFamilyExtension({}),
   new PositionerExtension({}),
   new UnderlineExtension(),
+  new DecorationsExtension({}),
+  new TextColorExtension({}),
+  new DocExtension({ content: "codeBlock" }),
+  new CodeBlockExtension({
+    supportedLanguages: [typescript],
+    defaultLanguage: "markdown",
+    syntaxTheme: "base16_ateliersulphurpool_light",
+    defaultWrap: true,
+  }),
   new ImageExtension({}),
   new CodeMirrorExtension({
     languages: languages,
@@ -85,6 +115,9 @@ export type Extensions = ReactExtensions<
   | PositionerExtension
   | UnderlineExtension
   | MarkdownExtension
+  | DecorationsExtension
+  | TextColorExtension
+  | CodeBlockExtension
   | LinkExtension
   | ListItemExtension
   | CalloutExtension
@@ -97,17 +130,53 @@ interface TextEditorProps {
   content: string;
   defaultFont: string;
   freeDrag: boolean;
+  onFocus: () => void;
+  onBlur: () => void;
 }
+
+const EditorComponent = ({
+  onBlur,
+  onFocus,
+}: {
+  onFocus: () => void;
+  onBlur: () => void;
+}) => {
+  const { getText } = useHelpers();
+  const text = getText();
+
+  return (
+    <motion.div
+      {...useRemirrorContext().getRootProps()}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      className="w-full h-8 bg-gradient-to-b from-background to-transparent "
+      // animate={{
+      //   opacity: [0, 1, 0],
+      // }}
+      // transition={{
+      //   duration: 4,
+      //   repeat: Infinity,
+      //   ease: "easeInOut",
+      // }}
+    />
+  );
+};
 
 const TextEditor = forwardRef<
   ReactFrameworkOutput<Extensions>,
   TextEditorProps
->(({ mutate, content, defaultFont, freeDrag }, ref) => {
-  const { manager, getContext, state, setState } = useRemirror({
+>(({ mutate, content, defaultFont, freeDrag, onFocus, onBlur }, ref) => {
+  const { manager, state, setState, getContext } = useRemirror({
     extensions: extensions,
     content: content,
     stringHandler: "markdown",
   });
+  const debouceFn = useCallback(
+    debounce((newState: string) => {
+      mutate(newState);
+    }, 300),
+    [mutate]
+  );
   const [markdown, setMarkdown] = useState<string>(
     getContext()?.helpers?.getMarkdown() ?? content
   );
@@ -124,12 +193,11 @@ const TextEditor = forwardRef<
     setMarkdown(newMarkdown);
     setState(state); // Update the ProseMirror document state
   };
-
   return (
     <div
       className={cn(
         "h-full rounded-lg bg-background border border-transparent ",
-        freeDrag && "border-border/80 hover:border-border"
+        freeDrag && "border-border/40 hover:border-border"
       )}
     >
       <div className="h-full overflow-y-scroll">
@@ -153,4 +221,4 @@ const TextEditor = forwardRef<
   );
 });
 
-export default TextEditor;
+export default memo(TextEditor);

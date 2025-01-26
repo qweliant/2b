@@ -5,6 +5,7 @@ import {
   GetAllObjects,
   GetObject,
   UpdateObject,
+  GetRecentObjectsofType,
   WriteObjectFile,
 } from "../../wailsjs/go/main/App";
 import { useQueryWrapper } from "./util";
@@ -45,7 +46,6 @@ const ObjectInstanceSchema = z.strictObject({
   id: z.string().uuid(),
   type: z.string(),
   title: z.string(),
-  pinned: z.boolean().default(false),
   description: z.string().optional(),
   contents: z.record(ContentTypeSchema).optional(),
   properties: z.record(PropertyValueSchema),
@@ -56,6 +56,7 @@ const ObjectInstanceSchema = z.strictObject({
     defaultFont: z.string().default("ui-sans-serif"),
     freeDrag: z.boolean().default(false),
   }),
+  pinned: z.boolean().default(false),
 });
 
 type ObjectInstance = z.infer<typeof ObjectInstanceSchema>;
@@ -64,7 +65,6 @@ const DEFAULT_OBJECT: ObjectInstance = {
   id: "",
   type: "",
   title: "Untitled",
-  pinned: false,
   description: "",
   contents: {},
   properties: {},
@@ -75,6 +75,7 @@ const DEFAULT_OBJECT: ObjectInstance = {
     defaultFont: "ui-sans-serif",
     freeDrag: false,
   },
+  pinned: false,
 };
 
 function useCreateObject() {
@@ -115,6 +116,19 @@ function useAllObjectsIDs() {
   });
 }
 
+function useRecentObjectIDs(objectType: string) {
+  return useQuery<string[]>({
+    queryKey: ["objects", objectType, "recent"],
+    queryFn: async () => {
+      const result = await GetRecentObjectsofType(objectType);
+      if (result) {
+        return result;
+      }
+      return [];
+    },
+  });
+}
+
 function useAllObjects(ids: string[] | undefined) {
   const objectQueries = useQueries<UseQueryOptions<ObjectInstance>[]>({
     queries: ids
@@ -138,6 +152,33 @@ function useAllObjects(ids: string[] | undefined) {
   return objectQueries;
 }
 
+function useAllObjectsWithSelect(
+  ids: string[] | undefined,
+  select: (data: ObjectInstance) => ObjectInstance
+) {
+  const objectQueries = useQueries<UseQueryOptions<ObjectInstance>[]>({
+    queries: ids
+      ? ids.map((id) => ({
+          queryKey: ["object", "sidebar", id],
+          queryFn: async () => {
+            const data = await GetObject(id);
+            const result = ObjectInstanceSchema.safeParse(JSON.parse(data));
+            if (result.success) {
+              return select(result.data);
+            } else {
+              console.error(result.error.errors);
+              throw result.error.errors;
+            }
+          },
+          retry: 0,
+          enabled: !!id,
+          select: select,
+        }))
+      : [],
+  });
+  return objectQueries;
+}
+
 function useObjectsOfType(type: string) {
   const { data: allObjectIDs } = useAllObjectsIDs();
   const allObjectsQueries = useAllObjects(allObjectIDs);
@@ -155,6 +196,31 @@ function useObject(id: string) {
       return JSON.parse(await GetObject(id));
     },
     editFn: (old: ObjectInstance, newState: ObjectInstance) => {
+      if (JSON.stringify(old) === JSON.stringify(newState)) {
+        return old;
+      }
+      return { ...old, ...newState };
+    },
+    mutateFn: (newState: ObjectInstance) => {
+      return UpdateObject(JSON.stringify(newState));
+    },
+  });
+}
+
+function useObjectWithSelect(
+  id: string,
+  selectionKey: string,
+  select: (data: ObjectInstance) => ObjectInstance
+) {
+  return useQueryWrapper<ObjectInstance>({
+    queryKey: ["object", selectionKey, id],
+    queryFn: async () => {
+      return select(JSON.parse(await GetObject(id)));
+    },
+    editFn: (old: ObjectInstance, newState: ObjectInstance) => {
+      if (JSON.stringify(old) === JSON.stringify(newState)) {
+        return old;
+      }
       return { ...old, ...newState };
     },
     mutateFn: (newState: ObjectInstance) => {
@@ -195,7 +261,7 @@ function useDefaultFont(id: string) {
     mutate(newData);
   };
   return {
-    defaultFont: data?.pageCustomization.defaultFont ?? "ui-sans-serif",
+    defaultFont: data?.pageCustomization?.defaultFont ?? "ui-sans-serif",
     setDefaultFont,
   };
 }
@@ -212,7 +278,7 @@ function useBackgroundColor(id: string) {
     mutate(newData);
   };
   return {
-    backgroundColor: data?.pageCustomization.backgroundColor ?? "",
+    backgroundColor: data?.pageCustomization?.backgroundColor ?? "",
     setBackgroundColor,
   };
 }
@@ -230,6 +296,9 @@ export {
   useDefaultFont,
   useBackgroundColor,
   useObjectsOfType,
+  useRecentObjectIDs,
+  useAllObjectsWithSelect,
+  useObjectWithSelect,
   useWriteObject,
   DEFAULT_OBJECT,
 };
