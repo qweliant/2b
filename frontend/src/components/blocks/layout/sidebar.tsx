@@ -220,15 +220,6 @@ const Sidebar = () => {
           <LucideInbox size={16} />
           Inbox
         </Button>
-        {/* <Button
-          variant={"ghost"}
-          className={cn("justify-normal px-2 gap-2")}
-          size={"sm"}
-          disabled
-        >
-          <LucideCalendar size={16} />
-          Calendar
-        </Button> */}
       </div>
       <Separator />
       <div className="flex items-center gap-2 px-2 text-sm text-muted-foreground">
@@ -241,37 +232,40 @@ const Sidebar = () => {
               "h-[4%] px-2 draggable w-full justify-start flex flex-col  "
             }
           >
-            <AnimatePresence initial={false}>
-              {pinnedObjects.map((object) => (
-                <TabsTrigger
-                  key={object.id}
-                  value={object.id}
-                  onClick={() => {
-                    // Check if object id is in tab state
-                    if (tabsState.tabs.find((tab) => tab.id === object.id)) {
-                      if (object.id !== activeTab) setActiveTab(object.id);
-                    } else {
-                      createTab(object.id, "object");
-                    }
-                  }}
-                  className={cn(
-                    "flex gap-2 w-full justify-between items-center group rounded-lg"
-                  )}
-                  style={{
-                    boxShadow:
-                      object.id === activeTab
-                        ? `0 1px 6px 2px ${getColor(object.id)}88`
-                        : undefined,
-                  }}
-                >
-                  <motion.div
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className={"flex gap-2 w-full justify-between items-center"}
+            <>
+              {pinnedObjects &&
+                pinnedObjects.map((object) => (
+                  <TabsTrigger
+                    key={object.id}
+                    value={object.id}
+                    onClick={() => {
+                      // Check if object id is in tab state
+                      if (tabsState.tabs.find((tab) => tab.id === object.id)) {
+                        if (object.id !== activeTab) setActiveTab(object.id);
+                      } else {
+                        createTab(object.id, "object");
+                      }
+                    }}
+                    className={cn(
+                      "flex gap-2 w-full justify-between items-center group rounded-lg"
+                    )}
+                    style={{
+                      boxShadow:
+                        object.id === activeTab
+                          ? `0 1px 6px 2px ${getColor(object.id)}88`
+                          : undefined,
+                    }}
                   >
-                    {object.title}
-                    {/* TODO: Add removing pins */}
-                    {/* <Button
+                    <motion.div
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className={
+                        "flex gap-2 w-full justify-between items-center"
+                      }
+                    >
+                      {object.title}
+                      {/* TODO: Add removing pins */}
+                      {/* <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         // if (tab.type === "createObjectType") {
@@ -285,10 +279,10 @@ const Sidebar = () => {
                     >
                       <LucideX size={12} />
                     </Button> */}
-                  </motion.div>
-                </TabsTrigger>
-              ))}
-            </AnimatePresence>
+                    </motion.div>
+                  </TabsTrigger>
+                ))}
+            </>
           </TabsList>
         </Tabs>
       </div>
@@ -303,7 +297,7 @@ const Sidebar = () => {
               "h-[4%] px-2 draggable w-full justify-start flex flex-col  "
             }
           >
-            <AnimatePresence initial={false}>
+            <>
               {tabsState.tabs.map((tab) => {
                 if (
                   tab.type === "object" &&
@@ -379,7 +373,7 @@ const Sidebar = () => {
                   </TabsTrigger>
                 );
               })}
-            </AnimatePresence>
+            </>
           </TabsList>
         </Tabs>
       </div>

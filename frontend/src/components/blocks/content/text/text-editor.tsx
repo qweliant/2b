@@ -20,9 +20,7 @@ import {
   CodeBlockExtension,
   ImageExtension,
 } from "remirror/extensions";
-import { basicSetup } from "@codemirror/basic-setup";
 import { languages } from "@codemirror/language-data";
-import { oneDark } from "@codemirror/theme-one-dark";
 import { CodeMirrorExtension } from "@remirror/extension-codemirror6";
 import {
   ReactExtensions,
@@ -43,20 +41,16 @@ import {
   useState,
 } from "react";
 import debounce from "lodash/debounce";
-import { EditorState, ExtensionPriority, getThemeVar } from "remirror";
+import { EditorState, ExtensionPriority } from "remirror";
 import "remirror/styles/all.css";
 import "../../../../remirror.css";
 import useDebounce from "../../../../lib/use-debounce";
 import { ThemeProvider } from "@remirror/react";
 import { cn } from "../../../../lib/utils";
-import { FloatingToolbar } from "./floating-toolbar";
 import { DecorationsExtension } from "remirror";
 import { motion } from "framer-motion";
 import { TextColorExtension } from "remirror/extensions";
-// import { WysiwygEditor } from '@remirror/react-editors/wysiwyg';
-import { MarkdownToolbar } from "@remirror/react-ui";
 import typescript from "refractor/lang/typescript.js";
-import { createContextState } from "create-context-state";
 
 const extensions = () => [
   new PlaceholderExtension({

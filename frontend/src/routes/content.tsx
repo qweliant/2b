@@ -16,12 +16,9 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { LucidePanelLeftOpen, LucidePin, LucideX } from "lucide-react";
 import ObjectContent from "../components/blocks/content/object-content";
 import { useQueries } from "@tanstack/react-query";
 import { ObjectInstance } from "../store/objectsStore";
-import { cn } from "../lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
 import { ObjectType } from "../types/objectTypes";
 import ObjectDashboard from "../components/blocks/ObjectDashboard";
 // import ToDoList from "../components/blocks/content/todolist/todolist";
