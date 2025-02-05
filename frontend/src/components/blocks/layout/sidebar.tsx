@@ -37,7 +37,6 @@ import { ModeToggle } from "../../ui/theme-toggle";
 import {
   DEFAULT_OBJECT,
   ObjectInstance,
-  useAllObjects,
   useAllObjectsIDs,
   useAllObjectsWithSelect,
   useCreateObject,
@@ -55,6 +54,7 @@ import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { COLLECTIONS_FLAG } from "../../../lib/feature-flags";
 const colorMap: {
   [key: string]: string;
 } = {
@@ -79,14 +79,18 @@ const Sidebar = () => {
   ) as ObjectType[];
 
   const { data: objectIDs } = useAllObjectsIDs();
-  const allObjectQueries = useAllObjectsWithSelect(objectIDs, (object) => {
-    return {
-      id: object.id,
-      title: object.title,
-      type: object.type,
-      pinned: object.pinned,
-    } as ObjectInstance;
-  });
+  const allObjectQueries = useAllObjectsWithSelect(
+    objectIDs,
+    (object) => {
+      return {
+        id: object.id,
+        title: object.title,
+        type: object.type,
+        pinned: object.pinned,
+      } as ObjectInstance;
+    },
+    "sidebar"
+  );
   const allObjects = allObjectQueries.map(
     (query) => query.data
   ) as ObjectInstance[];
@@ -98,31 +102,32 @@ const Sidebar = () => {
 
   const createObject = useCreateObject();
   const objectTypeQueries = useQueries({
-    queries: tabsState.tabs.map((tab) => ({
-      queryKey: ["objectType", tab.id],
-      select: (data: ObjectType) => {
-        return {
-          id: data.id,
-          name: data.name,
-          color: data.color,
-        };
-      },
-    })),
+    queries: tabsState.tabs
+      .filter((tab) => tab.type === "objectType")
+      .map((tab) => ({
+        queryKey: ["objectType", tab.id],
+        select: (data: ObjectType) => {
+          return {
+            id: data.id,
+            name: data.name,
+            color: data.color,
+          };
+        },
+      })),
   });
 
   const objectTypeTitles = objectTypeQueries.map((query) => query.data);
 
-  const objectsQueries = useQueries({
-    queries: tabsState.tabs.map((tab) => ({
-      queryKey: ["object", tab.id],
-      select: (data: ObjectInstance) => {
-        return {
-          id: data.id,
-          title: data.title,
-        };
-      },
-    })),
-  });
+  const objectsQueries = useAllObjectsWithSelect(
+    tabsState.tabs.filter((tab) => tab.type === "object").map((tab) => tab.id),
+    (object) => {
+      return {
+        id: object.id,
+        title: object.title,
+      } as ObjectInstance;
+    },
+    "tabs"
+  );
   const objectTitles = objectsQueries.map((query) => query.data);
 
   const handleCreateTab = () => {
@@ -307,6 +312,7 @@ const Sidebar = () => {
                 }
                 return (
                   <TabsTrigger
+                    asChild
                     key={tab.id}
                     value={tab.id}
                     onClick={() => {
@@ -403,6 +409,7 @@ const Sidebar = () => {
                   value={objectType.id}
                   className="text-sm"
                   hideBorder
+                  key={objectType.id}
                 >
                   <AccordionTrigger hideUnderline className="pb-1 w-full">
                     <div className="flex items-center justify-between w-full group ">
@@ -410,7 +417,9 @@ const Sidebar = () => {
                         className="flex gap-2 items-center hover:bg-secondary hover:shadow-inner hover:rounded-md w-[90%] py-0.5 px-0.5"
                         onClick={(e) => {
                           e.stopPropagation();
-                          createTab(objectType.id, "objectType");
+                          if (COLLECTIONS_FLAG) {
+                            createTab(objectType.id, "objectType");
+                          }
                         }}
                       >
                         <div

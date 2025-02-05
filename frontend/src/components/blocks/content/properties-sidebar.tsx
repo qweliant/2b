@@ -1,5 +1,5 @@
-import { memo, useState } from "react";
-import { useObject } from "@/store/objectsStore";
+import React, { memo, useState } from "react";
+import { useObjectWithSelect } from "@/store/objectsStore";
 import { useQuery } from "@tanstack/react-query";
 import { ObjectType } from "../../../types/objectTypes";
 import { Label } from "../../ui/label";
@@ -14,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
-import { useObjectWithSelect } from "@/store/objectsStore";
 
 import ObjectSelect from "../../object-select";
 import { createPortal } from "react-dom";

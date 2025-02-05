@@ -10,10 +10,6 @@ export function CreateObjectType(arg1) {
   return window['go']['main']['App']['CreateObjectType'](arg1);
 }
 
-export function DeleteObjectFile(arg1) {
-  return window['go']['main']['App']['DeleteObjectFile'](arg1);
-}
-
 export function DeleteObjectType(arg1) {
   return window['go']['main']['App']['DeleteObjectType'](arg1);
 }
@@ -40,10 +36,6 @@ export function GetRecentObjectsofType(arg1) {
 
 export function GetSummary(arg1) {
   return window['go']['main']['App']['GetSummary'](arg1);
-}
-
-export function ReadObjectFile(arg1) {
-  return window['go']['main']['App']['ReadObjectFile'](arg1);
 }
 
 export function ReadObjectTypeFile(arg1) {

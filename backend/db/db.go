@@ -14,13 +14,11 @@ import (
 
 // InitDB initializes the database connection
 func InitDB(log *zap.Logger) (*sql.DB, error) {
-	// Create a new SQLite database file if it doesn't exist
-	dataDir, err := util.GetDataDir()
-	if err != nil {
-		log.Sugar().Fatalf("Failed to get data directory: %v", err)
-	}
+	var err error
 
-	// Ensure the directory exists
+	dataDir, _ := util.GetDataDir()
+
+	// Create a new data directory if it doesn't exist
 	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
 		err = os.MkdirAll(dataDir, os.ModePerm)
 		if err != nil {
@@ -29,7 +27,7 @@ func InitDB(log *zap.Logger) (*sql.DB, error) {
 		}
 	}
 
-	// Build the full database file path
+	// Create a new SQLite database file if it doesn't exist
 	dbFilePath := filepath.Join(dataDir, util.LIHA_DB_NAME)
 
 	// Create the database file if it doesn't exist

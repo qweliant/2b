@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
   CreateObject,
-  DeleteObjectFile,
   GetAllObjects,
   GetObject,
   UpdateObject,
@@ -105,7 +104,7 @@ function useCreateObject() {
 
 function useAllObjectsIDs() {
   return useQuery<string[]>({
-    queryKey: ["objects"],
+    queryKey: ["objects", "ALL"],
     queryFn: async () => {
       const result = await GetAllObjects();
       if (result) {
@@ -154,12 +153,13 @@ function useAllObjects(ids: string[] | undefined) {
 
 function useAllObjectsWithSelect(
   ids: string[] | undefined,
-  select: (data: ObjectInstance) => ObjectInstance
+  select: (data: ObjectInstance) => ObjectInstance,
+  selectionKey: string
 ) {
   const objectQueries = useQueries<UseQueryOptions<ObjectInstance>[]>({
     queries: ids
       ? ids.map((id) => ({
-          queryKey: ["object", "sidebar", id],
+          queryKey: ["object", selectionKey, id],
           queryFn: async () => {
             const data = await GetObject(id);
             const result = ObjectInstanceSchema.safeParse(JSON.parse(data));
@@ -193,7 +193,14 @@ function useObject(id: string) {
   return useQueryWrapper<ObjectInstance>({
     queryKey: ["object", id],
     queryFn: async () => {
-      return JSON.parse(await GetObject(id));
+      const data = await GetObject(id);
+      const result = ObjectInstanceSchema.safeParse(JSON.parse(data));
+      if (result.success) {
+        return result.data;
+      } else {
+        console.error(result.error.errors);
+        throw result.error.errors;
+      }
     },
     editFn: (old: ObjectInstance, newState: ObjectInstance) => {
       if (JSON.stringify(old) === JSON.stringify(newState)) {
@@ -230,13 +237,13 @@ function useObjectWithSelect(
 }
 
 function useDeleteObject() {
-  const queryClient = useQueryClient();
-  return async (id: string) => {
-    await DeleteObjectFile(id);
-    queryClient.invalidateQueries({
-      queryKey: ["objects", "object", id],
-    });
-  };
+  // const queryClient = useQueryClient();
+  // return async (id: string) => {
+  //   await DeleteObjectFile(id);
+  //   queryClient.invalidateQueries({
+  //     queryKey:  ["object", id],
+  //   });
+  // };
 }
 
 function useWriteObject() {
