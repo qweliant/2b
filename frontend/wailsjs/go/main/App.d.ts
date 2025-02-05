@@ -27,8 +27,4 @@ export function SendMessage(arg1:string,arg2:string):Promise<string>;
 
 export function UpdateObject(arg1:string):Promise<void>;
 
-export function WriteObjectFile(arg1:string,arg2:string,arg3:string):Promise<void>;
-
-export function WriteObjectTypeFile(arg1:string,arg2:string):Promise<void>;
-
 export function WriteStateFile(arg1:string):Promise<void>;
