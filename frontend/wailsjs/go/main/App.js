@@ -54,6 +54,10 @@ export function UpdateObject(arg1) {
   return window['go']['main']['App']['UpdateObject'](arg1);
 }
 
+export function WriteObjectFile(arg1, arg2, arg3) {
+  return window['go']['main']['App']['WriteObjectFile'](arg1, arg2, arg3);
+}
+
 export function WriteStateFile(arg1) {
   return window['go']['main']['App']['WriteStateFile'](arg1);
 }

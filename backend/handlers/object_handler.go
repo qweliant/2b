@@ -5,7 +5,6 @@ import (
 	"app/backend/repositories"
 	"app/backend/util"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -120,18 +119,12 @@ func ReadObjectFile(objectID string, logger *zap.Logger) (string, error) {
 	return util.ReadJSONFile(path, logger)
 }
 
-func WriteObjectFile(id string, html string, title string, logger *zap.Logger) error {
+func (o *ObjectHandler) WriteObjectFile(id string, html string, title string, logger *zap.Logger) error {
 	path, err := getObjectFilePath(title)
 	if err != nil {
 		logger.Error("Error getting object file path", zap.Error(err))
 		return err
 	}
-	// converter := md.NewConverter("", true, nil)
-	// markdown, err := converter.ConvertString(html)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	err = os.WriteFile(path, []byte(html), 0644)
 	if err != nil {
 		logger.Error("Error writing markdown file", zap.Error(err))

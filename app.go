@@ -225,3 +225,11 @@ func (a *App) GetRecentObjectsofType(objectType string) ([]string, error) {
 	}
 	return data, nil
 }
+
+func (a *App) WriteObjectFile(id string, html string, title string) error {
+	err := a.handlers.ObjectHandler.WriteObjectFile(id, html, title, a.logger)
+	if err != nil {
+		a.logger.Error("Error writing file", zap.Error(err))
+	}
+	return nil
+}
