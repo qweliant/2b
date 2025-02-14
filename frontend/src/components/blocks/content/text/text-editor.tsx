@@ -19,9 +19,7 @@ import {
   CodeBlockExtension,
   ImageExtension,
 } from "remirror/extensions";
-import { basicSetup } from "@codemirror/basic-setup";
 import { languages } from "@codemirror/language-data";
-import { oneDark } from "@codemirror/theme-one-dark";
 import { CodeMirrorExtension } from "@remirror/extension-codemirror6";
 import {
   ReactExtensions,
