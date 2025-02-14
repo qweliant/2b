@@ -33,7 +33,6 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import useDebounce from "../../../../lib/use-debounce";
 import { ThemeProvider } from "@remirror/react";
 import { cn } from "../../../../lib/utils";
-import { marked } from "marked";
 import { EditorState, ExtensionPriority } from "remirror";
 
 const extensions = () => [
