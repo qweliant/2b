@@ -19,7 +19,6 @@ import {
   CodeBlockExtension,
   ImageExtension,
 } from "remirror/extensions";
-import { languages } from "@codemirror/language-data";
 import { CodeMirrorExtension } from "@remirror/extension-codemirror6";
 import {
   ReactExtensions,
@@ -37,14 +36,12 @@ import { EditorState, ExtensionPriority } from "remirror";
 
 const extensions = () => [
   new PlaceholderExtension({
-    placeholder: "Type here...",
+    placeholder: "Get me lit...",
     // emptyNodeClass: "my-custom-placeholder",
   }),
   new BoldExtension({}),
   new ItalicExtension(),
   new CalloutExtension({ defaultType: "warn" }), // Override defaultType: 'info'
-  new LinkExtension({ autoLink: true }),
-
   new StrikeExtension(),
   new ItalicExtension(),
   new HeadingExtension({}),
@@ -62,9 +59,7 @@ const extensions = () => [
   new PositionerExtension({}),
   new UnderlineExtension(),
   new ImageExtension({}),
-  new CodeMirrorExtension({
-    languages: languages,
-  }),
+  new LinkExtension({ autoLink: false }),
 ];
 
 export type Extensions = ReactExtensions<
@@ -82,12 +77,12 @@ export type Extensions = ReactExtensions<
   | PositionerExtension
   | UnderlineExtension
   | MarkdownExtension
-  | LinkExtension
   | ListItemExtension
   | CalloutExtension
   | CodeBlockExtension
   | ImageExtension
   | CodeMirrorExtension
+  | LinkExtension
 >;
 interface TextEditorProps {
   mutate: (newState: string) => void;
@@ -104,7 +99,11 @@ const TextEditor = forwardRef<
     extensions: extensions,
     content: content,
     stringHandler: "markdown",
+    builtin: {
+      exitMarksOnArrowPress: false,
+    },
   });
+
   const [markdown, setMarkdown] = useState<string>(
     getContext()?.helpers?.getMarkdown() ?? content
   );
@@ -117,9 +116,10 @@ const TextEditor = forwardRef<
   useImperativeHandle(ref, () => getContext(), [getContext]);
 
   const handleEditorChange = ({ state }: { state: EditorState }) => {
-    const newMarkdown = getContext()?.helpers?.getMarkdown() ?? "";
+    const newMarkdown = getContext()?.helpers?.getMarkdown(state) ?? "";
+    console.log(newMarkdown);
     setMarkdown(newMarkdown);
-    setState(state); // Update the ProseMirror document state
+    setState(state);
   };
 
   return (
